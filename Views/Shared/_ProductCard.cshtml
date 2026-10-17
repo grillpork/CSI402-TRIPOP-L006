@@ -1,0 +1,42 @@
+@model tripop_8021_lab006.Models.ProductCardViewModel
+
+<article class="group flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-200/80 bg-white transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-slate-200/80">
+    <div>
+        <div class="relative aspect-[4/5] overflow-hidden @Model.AccentClass">
+            <img src="@Model.ImageUrl" alt="@Model.Name" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
+
+            @if (Model.IsNew)
+            {
+                <span class="absolute left-3.5 top-3.5 rounded-full bg-slate-900/90 backdrop-blur-md px-3 py-1 text-[11px] font-semibold tracking-wide text-white shadow-sm">
+                    New arrival
+                </span>
+            }
+
+            <button type="button" aria-label="เพิ่ม @Model.Name ในรายการโปรด" class="absolute right-3.5 top-3.5 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-slate-700 shadow-md backdrop-blur transition hover:bg-red-500 hover:text-white hover:scale-110 active:scale-95">
+                <i data-lucide="heart" class="h-4 w-4 transition-colors"></i>
+            </button>
+        </div>
+
+        <div class="p-4 sm:p-5">
+            <div class="flex items-start justify-between gap-2">
+                <div class="flex-1 min-w-0">
+                    <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">@Model.Category</p>
+                    <h3 class="mt-1 text-sm sm:text-base font-bold text-slate-900 leading-snug line-clamp-2 h-10 group-hover:text-blue-600 transition-colors">
+                        @Model.Name
+                    </h3>
+                </div>
+                <button type="button" aria-label="เพิ่ม @Model.Name ลงตะกร้า" class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-slate-200 text-slate-700 bg-white transition-all duration-200 hover:bg-blue-600 hover:border-blue-600 hover:text-white hover:scale-105 active:scale-95 shadow-sm">
+                    <i data-lucide="plus" class="h-4 w-4"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="px-4 pb-4 sm:px-5 sm:pb-5 pt-0 flex items-baseline gap-2">
+        <span class="text-base sm:text-lg font-bold text-slate-900">@Model.Price</span>
+        @if (!string.IsNullOrWhiteSpace(Model.OldPrice))
+        {
+            <span class="text-xs sm:text-sm text-slate-400 line-through">@Model.OldPrice</span>
+        }
+    </div>
+</article>

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Fluck Fashion Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/tripop_8021_lab006.styles.css" asp-append-version="true" />
+</head>
+
+<body class="bg-slate-50/80 text-slate-800 antialiased min-h-screen flex flex-col font-sans" style="font-family: 'Anuphan', sans-serif;">
+    <div class="flex flex-1 min-h-screen">
+        <partial name="_Sidebar" />
+
+
+
+        <div id="admin-sidebar-backdrop" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40 hidden md:hidden"></div>
+
+        <div class="flex-1 flex flex-col min-w-0">
+            <header class="bg-white border-b border-slate-200 sticky top-0 z-20 px-4 sm:px-6 lg:px-8 py-3.5">
+                <div class="flex items-center justify-between gap-4">
+                    <div class="flex items-center gap-3">
+                        <button id="admin-sidebar-toggle" type="button" class="md:hidden p-2 rounded-lg text-slate-600 hover:bg-slate-100 focus:outline-none">
+                            <i data-lucide="menu" class="w-5 h-5"></i>
+                        </button>
+                        <div class="hidden sm:flex items-center gap-2 text-slate-400 bg-slate-100 px-3.5 py-1.5 rounded-xl text-sm w-64 md:w-80">
+                            <i data-lucide="search" class="w-4 h-4 text-slate-400"></i>
+                            <input type="text" placeholder="ค้นหาข้อมูล, ออเดอร์, สินค้า..." class="bg-transparent border-none text-slate-700 text-sm focus:outline-none w-full placeholder-slate-400" />
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-3">
+                        <a asp-controller="Home" asp-action="Index" 
+                           class="hidden sm:inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-slate-600 hover:text-indigo-600 bg-slate-100 hover:bg-indigo-50 rounded-lg transition-colors">
+                            <i data-lucide="store" class="w-3.5 h-3.5"></i>
+                            <span>ดูหน้าร้านค้า</span>
+                        </a>
+
+                        <button type="button" class="relative p-2 rounded-lg text-slate-500 hover:text-slate-700 hover:bg-slate-100 transition-colors">
+                            <i data-lucide="bell" class="w-5 h-5"></i>
+                            <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full"></span>
+                        </button>
+
+                        <div class="h-6 w-px bg-slate-200 hidden sm:block"></div>
+
+                        <div class="flex items-center gap-2.5 pl-1">
+                            <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-bold flex items-center justify-center text-xs shadow-sm">
+                                TS
+                            </div>
+                            <div class="hidden md:block text-left">
+                                <div class="text-xs font-semibold text-slate-800 leading-tight">Tripop Saibut</div>
+                                <div class="text-[11px] text-slate-400 font-medium">Administrator</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <main role="main" class="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
+                @RenderBody()
+            </main>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.lucide) {
+                window.lucide.createIcons();
+            }
+
+            const toggleBtn = document.getElementById('admin-sidebar-toggle');
+            const closeBtn = document.getElementById('admin-sidebar-close');
+            const sidebar = document.getElementById('app-sidebar');
+            const backdrop = document.getElementById('admin-sidebar-backdrop');
+
+            function openSidebar() {
+                sidebar.classList.remove('hidden');
+                backdrop.classList.remove('hidden');
+            }
+
+            function closeSidebar() {
+                sidebar.classList.add('hidden');
+                backdrop.classList.add('hidden');
+            }
+
+            if (toggleBtn && sidebar) {
+                toggleBtn.addEventListener('click', () => {
+                    if (sidebar.classList.contains('hidden')) {
+                        openSidebar();
+                    } else {
+                        closeSidebar();
+                    }
+                });
+            }
+
+            if (closeBtn) {
+                closeBtn.addEventListener('click', closeSidebar);
+            }
+
+            if (backdrop) {
+                backdrop.addEventListener('click', closeSidebar);
+            }
+        });
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+
+</html>
+
