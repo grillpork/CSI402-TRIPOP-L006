@@ -10,6 +10,7 @@ public partial class CSI402DB : DbContext
         : base(options) { }
 
     public virtual DbSet<User> Users { get; set; }
+    public virtual DbSet<LabStudent> LabStudents { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
