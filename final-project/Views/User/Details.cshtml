@@ -1,0 +1,28 @@
+@model final_project.Models.User
+@{
+    ViewData["Title"] = "User Details";
+}
+
+<div class="max-w-lg mx-auto mt-6 bg-white rounded-2xl border border-neutral-200 p-6 sm:p-8 shadow-sm">
+    <h1 class="text-xl font-bold uppercase tracking-tight text-glam-black mb-6">รายละเอียดผู้ใช้ (Details)</h1>
+
+    @if (Model != null)
+    {
+        @if (!string.IsNullOrEmpty(Model.ImageUrl))
+        {
+            <div class="mb-6 flex justify-center">
+                <img src="@Model.ImageUrl" alt="@Model.UserName" class="w-32 h-32 rounded-full object-cover border border-neutral-200" />
+            </div>
+        }
+
+        <dl class="divide-y divide-neutral-100 text-sm mb-6">
+            <div class="py-2.5 flex justify-between"><dt class="text-neutral-500">UserId</dt><dd class="font-medium">#@Model.UserId</dd></div>
+            <div class="py-2.5 flex justify-between"><dt class="text-neutral-500">UserName</dt><dd class="font-semibold">@Model.UserName</dd></div>
+            <div class="py-2.5 flex justify-between"><dt class="text-neutral-500">Role</dt><dd><span class="rounded-full bg-glam-brown/15 text-glam-brown px-3 py-0.5 text-xs font-semibold">@(Model.Role?.RoleName ?? "Client")</span></dd></div>
+            <div class="py-2.5 flex justify-between"><dt class="text-neutral-500">Email</dt><dd>@Model.Email</dd></div>
+            <div class="py-2.5 flex justify-between"><dt class="text-neutral-500">Password</dt><dd class="text-neutral-400">@Model.Password</dd></div>
+        </dl>
+    }
+
+    <a asp-action="UserList" class="inline-block rounded-full border border-neutral-300 px-5 py-2 text-xs font-semibold text-glam-black hover:border-glam-black transition">กลับหน้ารายการ</a>
+</div>

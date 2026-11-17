@@ -1,0 +1,44 @@
+@model final_project.Models.Shop
+@{
+    ViewData["Title"] = "สมัครเปิดร้านค้า (Seller Center)";
+    var users = ViewBag.Users as List<final_project.Models.User> ?? new List<final_project.Models.User>();
+}
+
+<div class="max-w-xl mx-auto mt-6 bg-white rounded-2xl border border-neutral-200 p-6 sm:p-8 shadow-sm">
+    <h1 class="text-2xl font-bold uppercase tracking-tight text-glam-black mb-1">สมัครเปิดร้านค้า (Seller Registration)</h1>
+    <p class="text-xs text-neutral-500 mb-6">กรอกข้อมูลร้านค้าของคุณเพื่อเริ่มขายสินค้า</p>
+
+    <form asp-action="RegisterShop" method="post" class="space-y-4">
+        <div>
+            <label asp-for="UserId" class="block text-xs font-semibold uppercase tracking-wider text-neutral-600 mb-1.5">เจ้าของร้าน (User)</label>
+            <select asp-for="UserId" class="w-full rounded-xl border border-neutral-300 px-4 py-2.5 text-sm focus:outline-none focus:border-glam-black">
+                @foreach (var u in users)
+                {
+                    <option value="@u.UserId">@u.UserName (@u.Email)</option>
+                }
+            </select>
+        </div>
+        <div>
+            <label asp-for="ShopName" class="block text-xs font-semibold uppercase tracking-wider text-neutral-600 mb-1.5">ชื่อร้านค้า (ShopName)</label>
+            <input asp-for="ShopName" class="w-full rounded-xl border border-neutral-300 px-4 py-2.5 text-sm focus:outline-none focus:border-glam-black" placeholder="เช่น My Official Store" />
+        </div>
+        <div>
+            <label asp-for="Phone" class="block text-xs font-semibold uppercase tracking-wider text-neutral-600 mb-1.5">เบอร์โทรติดต่อ (Phone)</label>
+            <input asp-for="Phone" class="w-full rounded-xl border border-neutral-300 px-4 py-2.5 text-sm focus:outline-none focus:border-glam-black" placeholder="08x-xxx-xxxx" />
+        </div>
+        <div>
+            <label asp-for="Address" class="block text-xs font-semibold uppercase tracking-wider text-neutral-600 mb-1.5">ที่อยู่ร้านค้า / คลังสินค้า (Address)</label>
+            <input asp-for="Address" class="w-full rounded-xl border border-neutral-300 px-4 py-2.5 text-sm focus:outline-none focus:border-glam-black" />
+        </div>
+        <div>
+            <label asp-for="Description" class="block text-xs font-semibold uppercase tracking-wider text-neutral-600 mb-1.5">รายละเอียดร้านค้า (Description)</label>
+            <textarea asp-for="Description" rows="3" class="w-full rounded-xl border border-neutral-300 px-4 py-2.5 text-sm focus:outline-none focus:border-glam-black"></textarea>
+        </div>
+
+        <button type="submit" class="w-full rounded-full bg-glam-black text-white py-3 text-xs font-semibold uppercase tracking-wider hover:bg-glam-brown transition">ยืนยันการสมัครเปิดร้านค้า</button>
+    </form>
+
+    <div class="mt-5 text-center text-xs">
+        <a asp-action="ShopList" class="text-neutral-500 hover:text-glam-black underline">ดูรายการร้านค้าทั้งหมด</a>
+    </div>
+</div>

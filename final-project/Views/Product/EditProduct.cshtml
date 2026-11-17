@@ -1,0 +1,185 @@
+@model final_project.Models.Product
+@{
+    ViewData["Title"] = "Edit Product";
+    var categories = ViewBag.Categories as List<final_project.Models.Category> ?? new List<final_project.Models.Category>();
+    var shops = ViewBag.Shops as List<final_project.Models.Shop> ?? new List<final_project.Models.Shop>();
+    var productImages = ViewBag.ProductImages as List<final_project.Models.Media> ?? new List<final_project.Models.Media>();
+    var productVideo = ViewBag.ProductVideo as final_project.Models.Media;
+}
+
+<div class="max-w-2xl mx-auto mt-6 bg-white rounded-2xl border border-neutral-200 p-6 sm:p-8 shadow-sm">
+    <h1 class="text-xl font-bold uppercase tracking-tight text-glam-black mb-6">แก้ไขสินค้าเสื้อผ้า</h1>
+
+    <form asp-action="EditProduct" method="post" enctype="multipart/form-data" class="space-y-4">
+        <input type="hidden" asp-for="ProductId" />
+        <input type="hidden" asp-for="ImageUrl" />
+
+        <div>
+            <label asp-for="ShopId" class="block text-xs font-semibold uppercase tracking-wider text-neutral-600 mb-1.5">ร้านค้าผู้ขาย (Shop)</label>
+            <select asp-for="ShopId" class="w-full rounded-xl border border-neutral-300 px-4 py-2.5 text-sm focus:outline-none focus:border-glam-black">
+                <option value="">-- ไม่ระบุร้านค้า --</option>
+                @foreach (var s in shops)
+                {
+                    <option value="@s.ShopId">@s.ShopName</option>
+                }
+            </select>
+        </div>
+
+        <div>
+            <label asp-for="CategoryId" class="block text-xs font-semibold uppercase tracking-wider text-neutral-600 mb-1.5">หมวดหมู่ (Category)</label>
+            <select asp-for="CategoryId" class="w-full rounded-xl border border-neutral-300 px-4 py-2.5 text-sm focus:outline-none focus:border-glam-black">
+                @foreach (var cat in categories)
+                {
+                    <option value="@cat.CategoryId">@cat.CategoryName</option>
+                }
+            </select>
+        </div>
+
+        <div>
+            <label asp-for="ProductName" class="block text-xs font-semibold uppercase tracking-wider text-neutral-600 mb-1.5">ชื่อสินค้า (ProductName)</label>
+            <input asp-for="ProductName" class="w-full rounded-xl border border-neutral-300 px-4 py-2.5 text-sm focus:outline-none focus:border-glam-black" />
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div>
+                <label asp-for="Size" class="block text-xs font-semibold uppercase tracking-wider text-neutral-600 mb-1.5">ไซส์ (Size)</label>
+                <select asp-for="Size" class="w-full rounded-xl border border-neutral-300 px-4 py-2.5 text-sm focus:outline-none focus:border-glam-black">
+                    <option value="XS">XS</option>
+                    <option value="S">S</option>
+                    <option value="M">M</option>
+                    <option value="L">L</option>
+                    <option value="XL">XL</option>
+                    <option value="XXL">XXL</option>
+                    <option value="Free Size">Free Size</option>
+                </select>
+            </div>
+            <div>
+                <label asp-for="Color" class="block text-xs font-semibold uppercase tracking-wider text-neutral-600 mb-1.5">สี (Color)</label>
+                <input asp-for="Color" class="w-full rounded-xl border border-neutral-300 px-4 py-2.5 text-sm focus:outline-none focus:border-glam-black" />
+            </div>
+            <div>
+                <label asp-for="Gender" class="block text-xs font-semibold uppercase tracking-wider text-neutral-600 mb-1.5">เพศ (Gender)</label>
+                <select asp-for="Gender" class="w-full rounded-xl border border-neutral-300 px-4 py-2.5 text-sm focus:outline-none focus:border-glam-black">
+                    <option value="Unisex">Unisex</option>
+                    <option value="ผู้ชาย">ผู้ชาย</option>
+                    <option value="ผู้หญิง">ผู้หญิง</option>
+                </select>
+            </div>
+        </div>
+
+        <div>
+            <label asp-for="Description" class="block text-xs font-semibold uppercase tracking-wider text-neutral-600 mb-1.5">รายละเอียด (Description)</label>
+            <textarea asp-for="Description" rows="3" class="w-full rounded-xl border border-neutral-300 px-4 py-2.5 text-sm focus:outline-none focus:border-glam-black"></textarea>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+            <div>
+                <label asp-for="Price" class="block text-xs font-semibold uppercase tracking-wider text-neutral-600 mb-1.5">ราคา (Price)</label>
+                <input asp-for="Price" type="number" step="0.01" class="w-full rounded-xl border border-neutral-300 px-4 py-2.5 text-sm focus:outline-none focus:border-glam-black" />
+            </div>
+            <div>
+                <label asp-for="Stock" class="block text-xs font-semibold uppercase tracking-wider text-neutral-600 mb-1.5">สต็อก (Stock)</label>
+                <input asp-for="Stock" type="number" class="w-full rounded-xl border border-neutral-300 px-4 py-2.5 text-sm focus:outline-none focus:border-glam-black" />
+            </div>
+        </div>
+
+        <!-- Existing Images + SortOrder Management -->
+        <div class="pt-2 border-t border-neutral-200">
+            <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-600 mb-2">จัดลำดับรูปภาพสินค้า (Sort Order)</label>
+            @if (productImages.Any())
+            {
+                <div id="imageSortList" class="space-y-2.5 mb-3">
+                    @for (var i = 0; i < productImages.Count; i++)
+                    {
+                        var img = productImages[i];
+                        <div class="sort-item flex items-center justify-between gap-3 rounded-xl border border-neutral-200 bg-glam-gray/50 p-2.5">
+                            <div class="flex items-center gap-3 min-w-0">
+                                <img src="@img.FilePath" alt="@img.FileName" class="w-14 h-14 object-cover rounded-lg border border-neutral-200 shrink-0" />
+                                <div class="min-w-0">
+                                    <div class="flex items-center gap-2">
+                                        @if (i == 0)
+                                        {
+                                            <span class="rounded-full bg-glam-black text-white px-2.5 py-0.5 text-[10px] font-semibold uppercase">#1 รูปหลัก</span>
+                                        }
+                                        <span class="text-xs font-medium text-glam-black truncate">@img.FileName</span>
+                                    </div>
+                                    <div class="text-[11px] text-neutral-400 truncate">@img.FilePath</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2 shrink-0">
+                                <input type="hidden" name="mediaIds" value="@img.MediaId" />
+                                <label class="text-[11px] text-neutral-500">ลำดับ:</label>
+                                <input type="number" name="sortOrders" value="@img.SortOrder" class="sort-order-input w-16 rounded-lg border border-neutral-300 bg-white px-2 py-1 text-xs text-center font-semibold" />
+                                <button type="button" onclick="moveItem(this, -1)" class="rounded-lg border border-neutral-300 bg-white px-2 py-1 text-xs hover:bg-glam-black hover:text-white transition" title="เลื่อนขึ้น">&uarr;</button>
+                                <button type="button" onclick="moveItem(this, 1)" class="rounded-lg border border-neutral-300 bg-white px-2 py-1 text-xs hover:bg-glam-black hover:text-white transition" title="เลื่อนลง">&darr;</button>
+                                <button type="button" onclick="deleteProductMedia(@img.MediaId)" class="rounded-lg border border-red-300 bg-white px-2.5 py-1 text-xs font-medium text-red-600 hover:bg-red-600 hover:text-white transition">ลบ</button>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else if (!string.IsNullOrEmpty(Model?.ImageUrl))
+            {
+                <div class="mb-3">
+                    <div class="text-xs text-neutral-500 mb-1">รูปปัจจุบัน</div>
+                    <img src="@Model.ImageUrl" alt="Product Image" class="h-24 rounded-xl border border-neutral-200 object-cover" />
+                </div>
+            }
+
+            <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-600 mb-1.5">เพิ่มรูปภาพสินค้า (เลือกได้หลายภาพ)</label>
+            <input type="file" name="imageFiles" accept="image/*" multiple class="w-full rounded-xl border border-neutral-300 px-4 py-2 text-sm file:mr-4 file:rounded-full file:border-0 file:bg-glam-black file:px-4 file:py-1.5 file:text-xs file:font-semibold file:text-white hover:file:bg-glam-brown" />
+        </div>
+
+        <!-- Video Showcase -->
+        <div class="pt-2 border-t border-neutral-200">
+            <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-600 mb-2">Video Showcase (วิดีโอแนะนำสินค้า)</label>
+            @if (productVideo != null)
+            {
+                <div class="mb-3 rounded-xl border border-neutral-200 bg-glam-gray/50 p-3">
+                    <video src="@productVideo.FilePath" controls class="w-full max-h-56 rounded-lg mb-2 bg-black"></video>
+                    <div class="flex items-center justify-between text-xs">
+                        <span class="text-neutral-600 truncate">@productVideo.FileName</span>
+                        <button type="button" onclick="deleteProductMedia(@productVideo.MediaId)" class="rounded-full border border-red-300 bg-white px-3 py-1 text-xs font-medium text-red-600 hover:bg-red-600 hover:text-white transition">ลบวิดีโอ</button>
+                    </div>
+                </div>
+            }
+            <input type="file" name="videoFile" accept="video/*" class="w-full rounded-xl border border-neutral-300 px-4 py-2 text-sm file:mr-4 file:rounded-full file:border-0 file:bg-glam-brown file:px-4 file:py-1.5 file:text-xs file:font-semibold file:text-white hover:file:bg-glam-black" />
+            <p class="text-[11px] text-neutral-400 mt-1">อัปโหลดวิดีโอใหม่เพื่อเพิ่มหรือแทนที่ Video Showcase เดิม</p>
+        </div>
+
+        <div class="flex gap-3 pt-2">
+            <button type="submit" class="rounded-full bg-glam-black text-white px-6 py-2.5 text-xs font-semibold uppercase tracking-wider hover:bg-glam-brown transition">บันทึกการแก้ไข</button>
+            <a asp-action="ProductList" class="rounded-full border border-neutral-300 px-6 py-2.5 text-xs font-medium text-neutral-700 hover:border-glam-black transition">ยกเลิก</a>
+        </div>
+    </form>
+
+    <form id="deleteMediaForm" asp-action="DeleteProductMedia" method="post" class="hidden">
+        <input type="hidden" id="deleteMediaIdInput" name="mediaId" />
+        <input type="hidden" name="productId" value="@Model?.ProductId" />
+    </form>
+</div>
+
+<script>
+    function moveItem(btn, direction) {
+        const list = document.getElementById('imageSortList');
+        const item = btn.closest('.sort-item');
+        const target = direction < 0 ? item.previousElementSibling : item.nextElementSibling;
+        if (!target) return;
+
+        if (direction < 0) {
+            list.insertBefore(item, target);
+        } else {
+            list.insertBefore(target, item);
+        }
+
+        const inputs = list.querySelectorAll('.sort-order-input');
+        inputs.forEach((input, idx) => {
+            input.value = idx + 1;
+        });
+    }
+
+    function deleteProductMedia(mediaId) {
+        document.getElementById('deleteMediaIdInput').value = mediaId;
+        document.getElementById('deleteMediaForm').submit();
+    }
+</script>

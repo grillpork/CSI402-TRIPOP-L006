@@ -1,0 +1,144 @@
+@model final_project.Models.UserViewModel
+@{
+    ViewData["Title"] = "Login";
+}
+
+<section class="max-w-lg mx-auto my-4 sm:my-8">
+    <div class="rounded-3xl bg-white border border-neutral-200/90 shadow-sm p-6 sm:p-10 flex flex-col justify-between">
+        <div>
+            <!-- Mode Switcher Tabs -->
+            <div class="bg-glam-gray p-1 rounded-full grid grid-cols-2 mb-8" role="tablist" aria-label="Authentication mode">
+                    <a asp-controller="Login" asp-action="Login" role="tab" aria-selected="true"
+                       class="rounded-full bg-glam-black text-white py-2 px-4 text-center text-xs font-semibold tracking-wider transition">
+                        เข้าสู่ระบบ (Login)
+                    </a>
+                    <a asp-controller="Login" asp-action="Register" role="tab" aria-selected="false"
+                       class="rounded-full py-2 px-4 text-center text-xs font-semibold text-neutral-500 hover:text-glam-black transition">
+                        สมัครสมาชิก (Register)
+                    </a>
+                </div>
+
+                <div class="mb-6">
+                    <h1 class="text-2xl sm:text-3xl font-bold uppercase tracking-tight text-glam-black">เข้าสู่ระบบ (Login)</h1>
+                    <p class="text-xs sm:text-sm text-neutral-500 mt-1">กรอกชื่อผู้ใช้และรหัสผ่านเพื่อเข้าสู่ระบบบัญชี GLAMORA ของคุณ</p>
+                </div>
+
+                @if (TempData["SuccessMessage"] != null)
+                {
+                    <div role="status" class="mb-5 flex items-start gap-2.5 rounded-2xl bg-emerald-50 border border-emerald-200 px-4 py-3 text-xs text-emerald-800">
+                        <svg class="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
+                        <span>@TempData["SuccessMessage"]</span>
+                    </div>
+                }
+
+                @if (ViewBag.ErrorMessage != null)
+                {
+                    <div role="alert" class="mb-5 flex items-start gap-2.5 rounded-2xl bg-red-50 border border-red-200 px-4 py-3 text-xs text-red-700">
+                        <svg class="w-4 h-4 text-red-600 shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                        <span>@ViewBag.ErrorMessage</span>
+                    </div>
+                }
+
+                <form asp-controller="Login" asp-action="Login" method="post" class="space-y-5">
+                    <div>
+                        <label asp-for="UserName" class="block text-xs font-semibold uppercase tracking-wider text-neutral-600 mb-2">
+                            ชื่อผู้ใช้ (UserName) <span class="text-red-500">*</span>
+                        </label>
+                        <div class="relative">
+                            <span class="pointer-events-none absolute inset-y-0 left-0 pl-4 flex items-center text-neutral-400">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                </svg>
+                            </span>
+                            <input asp-for="UserName" required autocomplete="username" placeholder="กรอกชื่อผู้ใช้ของคุณ"
+                                   class="w-full rounded-xl bg-glam-gray/70 border border-neutral-300 pl-11 pr-4 py-3 text-sm text-glam-black placeholder:text-neutral-400 focus:outline-none focus:bg-white focus:border-glam-black transition" />
+                        </div>
+                    </div>
+
+                    <div>
+                        <label asp-for="Password" class="block text-xs font-semibold uppercase tracking-wider text-neutral-600 mb-2">
+                            รหัสผ่าน (Password) <span class="text-red-500">*</span>
+                        </label>
+                        <div class="relative">
+                            <span class="pointer-events-none absolute inset-y-0 left-0 pl-4 flex items-center text-neutral-400">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                </svg>
+                            </span>
+                            <input asp-for="Password" id="loginPassword" type="password" required autocomplete="current-password" placeholder="กรอกรหัสผ่าน"
+                                   class="w-full rounded-xl bg-glam-gray/70 border border-neutral-300 pl-11 pr-12 py-3 text-sm text-glam-black placeholder:text-neutral-400 focus:outline-none focus:bg-white focus:border-glam-black transition" />
+                            <button type="button" onclick="toggleLoginPassword()" aria-label="แสดงหรือซ่อนรหัสผ่าน"
+                                    class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-neutral-400 hover:text-glam-black transition">
+                                <svg id="loginEyeOpen" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                                <svg id="loginEyeClosed" class="w-4 h-4 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                                    <line x1="1" y1="1" x2="23" y2="23"></line>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
+                        <label class="inline-flex items-center gap-2 cursor-pointer text-neutral-600 select-none">
+                            <input type="checkbox" name="rememberMe" class="w-4 h-4 rounded border-neutral-300 accent-glam-black" />
+                            <span>จดจำการเข้าสู่ระบบ (Remember me)</span>
+                        </label>
+                        <a asp-controller="Home" asp-action="Index" class="font-medium text-neutral-500 hover:text-glam-black transition">
+                            &larr; กลับหน้าร้านค้า
+                        </a>
+                    </div>
+
+                    <button type="submit"
+                            class="w-full rounded-full bg-glam-black text-white py-3.5 px-6 text-xs font-semibold uppercase tracking-widest hover:bg-glam-brown transition inline-flex items-center justify-center gap-2">
+                        <span>เข้าสู่ระบบ / SIGN IN</span>
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                            <polyline points="12 5 19 12 12 19"></polyline>
+                        </svg>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Bottom Quick Navigation Card -->
+            <div class="mt-8 rounded-2xl bg-glam-gray/80 border border-neutral-200/80 p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <div class="text-xs font-semibold text-glam-black">ยังไม่มีบัญชี GLAMORA?</div>
+                    <p class="text-xs text-neutral-500 mt-0.5">
+                        สนใจเปิดร้านค้ากับเรา? <a asp-controller="Shop" asp-action="RegisterShop" class="font-semibold text-glam-brown hover:text-glam-black underline">สมัครเปิดร้านค้า</a>
+                    </p>
+                </div>
+                <a asp-controller="Login" asp-action="Register"
+                   class="shrink-0 rounded-full border border-glam-black px-5 py-2 text-xs font-semibold uppercase tracking-wider text-glam-black hover:bg-glam-black hover:text-white transition text-center">
+                    สมัครสมาชิกใหม่
+                </a>
+            </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        function toggleLoginPassword() {
+            const input = document.getElementById('loginPassword');
+            const eyeOpen = document.getElementById('loginEyeOpen');
+            const eyeClosed = document.getElementById('loginEyeClosed');
+            if (!input) return;
+
+            const isPassword = input.type === 'password';
+            input.type = isPassword ? 'text' : 'password';
+            eyeOpen.classList.toggle('hidden', isPassword);
+            eyeClosed.classList.toggle('hidden', !isPassword);
+        }
+    </script>
+}

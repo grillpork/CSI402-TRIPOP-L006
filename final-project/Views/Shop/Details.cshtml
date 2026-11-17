@@ -1,0 +1,76 @@
+@model final_project.Models.Shop
+@{
+    ViewData["Title"] = "Shop Details";
+}
+
+<div class="max-w-2xl mx-auto mt-6 space-y-6">
+    <div class="bg-white rounded-2xl border border-neutral-200 p-6 sm:p-8 shadow-sm">
+        <h1 class="text-xl font-bold uppercase tracking-tight text-glam-black mb-6">รายละเอียดร้านค้า (Details)</h1>
+
+        @if (Model != null)
+        {
+            <dl class="divide-y divide-neutral-100 text-sm mb-6">
+                <div class="py-2.5 flex justify-between"><dt class="text-neutral-500">ShopId</dt><dd class="font-medium">#@Model.ShopId</dd></div>
+                <div class="py-2.5 flex justify-between"><dt class="text-neutral-500">ShopName</dt><dd class="font-semibold">@Model.ShopName</dd></div>
+                <div class="py-2.5 flex justify-between"><dt class="text-neutral-500">เจ้าของร้าน</dt><dd>@(Model.User?.UserName ?? $"User #{Model.UserId}")</dd></div>
+                <div class="py-2.5 flex justify-between"><dt class="text-neutral-500">Phone</dt><dd>@Model.Phone</dd></div>
+                <div class="py-2.5 flex justify-between gap-4"><dt class="text-neutral-500 shrink-0">Address</dt><dd class="text-right">@Model.Address</dd></div>
+                <div class="py-2.5 flex justify-between gap-4"><dt class="text-neutral-500 shrink-0">Description</dt><dd class="text-right text-neutral-600">@Model.Description</dd></div>
+                <div class="py-2.5 flex justify-between"><dt class="text-neutral-500">CreatedAt</dt><dd class="text-neutral-500">@Model.CreatedAt.ToString("yyyy-MM-dd HH:mm")</dd></div>
+            </dl>
+        }
+
+        <a asp-action="ShopList" class="inline-block rounded-full border border-neutral-300 px-5 py-2 text-xs font-semibold text-glam-black hover:border-glam-black transition">กลับหน้ารายการ</a>
+    </div>
+
+    @if (Model != null)
+    {
+        <div class="bg-white rounded-2xl border border-neutral-200 p-6 sm:p-8 shadow-sm">
+            <h2 class="text-base font-bold uppercase tracking-wider text-glam-black mb-4">ลิงก์โซเชียลของร้านค้า (Social Links)</h2>
+
+            @if (Model.SocialLinks.Any())
+            {
+                <div class="divide-y divide-neutral-100 border border-neutral-200 rounded-xl mb-6">
+                    @foreach (var link in Model.SocialLinks)
+                    {
+                        <div class="px-4 py-3 flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0">
+                                <span class="rounded-full bg-glam-brown/15 text-glam-brown px-3 py-0.5 text-xs font-semibold shrink-0">@link.Platform</span>
+                                <a href="@link.Url" target="_blank" class="text-sm text-glam-black hover:text-glam-brown underline truncate">@link.Url</a>
+                            </div>
+                            <form asp-action="DeleteSocialLink" method="post" class="shrink-0">
+                                <input type="hidden" name="id" value="@link.SocialLinkId" />
+                                <input type="hidden" name="shopId" value="@Model.ShopId" />
+                                <button type="submit" class="rounded-full border border-red-300 px-3 py-1 text-xs font-medium text-red-600 hover:bg-red-600 hover:text-white transition">ลบ</button>
+                            </form>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <p class="text-xs text-neutral-500 mb-6">ยังไม่มีลิงก์โซเชียล</p>
+            }
+
+            <form asp-action="AddSocialLink" method="post" class="grid grid-cols-1 sm:grid-cols-12 gap-2.5">
+                <input type="hidden" name="ShopId" value="@Model.ShopId" />
+                <div class="sm:col-span-4">
+                    <select name="Platform" class="w-full rounded-xl border border-neutral-300 px-3 py-2 text-sm focus:outline-none focus:border-glam-black">
+                        <option value="Facebook">Facebook</option>
+                        <option value="Instagram">Instagram</option>
+                        <option value="Line">Line</option>
+                        <option value="TikTok">TikTok</option>
+                        <option value="YouTube">YouTube</option>
+                        <option value="Website">Website</option>
+                    </select>
+                </div>
+                <div class="sm:col-span-6">
+                    <input type="text" name="Url" class="w-full rounded-xl border border-neutral-300 px-4 py-2 text-sm focus:outline-none focus:border-glam-black" placeholder="https://..." />
+                </div>
+                <div class="sm:col-span-2">
+                    <button type="submit" class="w-full rounded-full bg-glam-black text-white py-2 text-xs font-semibold uppercase tracking-wider hover:bg-glam-brown transition">+ เพิ่ม</button>
+                </div>
+            </form>
+        </div>
+    }
+</div>

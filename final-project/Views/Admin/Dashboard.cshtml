@@ -1,0 +1,113 @@
+@{
+    ViewData["Title"] = "Admin Dashboard";
+    var recentUsers = ViewBag.RecentUsers as List<final_project.Models.User> ?? new List<final_project.Models.User>();
+    var recentProducts = ViewBag.RecentProducts as List<final_project.Models.Product> ?? new List<final_project.Models.Product>();
+    var categories = ViewBag.Categories as List<final_project.Models.Category> ?? new List<final_project.Models.Category>();
+}
+
+<div class="mb-6">
+    <h1 class="text-2xl font-bold uppercase tracking-tight text-glam-black">Admin Dashboard</h1>
+    <p class="text-xs text-neutral-500 mt-1">ภาพรวมและการจัดการ User, Product, และ Category</p>
+</div>
+
+<!-- KPI Cards -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+    <div class="bg-white rounded-2xl border border-neutral-200 p-5 shadow-sm">
+        <div class="text-xs uppercase tracking-wider text-neutral-500">Users</div>
+        <div class="text-3xl font-bold text-glam-black mt-1 mb-3">@ViewBag.UserCount</div>
+        <a asp-controller="User" asp-action="UserList" class="text-xs font-semibold text-glam-brown hover:text-glam-black transition">จัดการ User &rarr;</a>
+    </div>
+    <div class="bg-white rounded-2xl border border-neutral-200 p-5 shadow-sm">
+        <div class="text-xs uppercase tracking-wider text-neutral-500">Products</div>
+        <div class="text-3xl font-bold text-glam-black mt-1 mb-3">@ViewBag.ProductCount</div>
+        <a asp-controller="Product" asp-action="ProductList" class="text-xs font-semibold text-glam-brown hover:text-glam-black transition">จัดการ Product &rarr;</a>
+    </div>
+    <div class="bg-white rounded-2xl border border-neutral-200 p-5 shadow-sm">
+        <div class="text-xs uppercase tracking-wider text-neutral-500">Categories</div>
+        <div class="text-3xl font-bold text-glam-black mt-1 mb-3">@ViewBag.CategoryCount</div>
+        <a asp-controller="Category" asp-action="CategoryList" class="text-xs font-semibold text-glam-brown hover:text-glam-black transition">จัดการ Category &rarr;</a>
+    </div>
+    <div class="bg-white rounded-2xl border border-neutral-200 p-5 shadow-sm">
+        <div class="text-xs uppercase tracking-wider text-neutral-500">Orders</div>
+        <div class="text-3xl font-bold text-glam-black mt-1 mb-3">@ViewBag.OrderCount</div>
+        <a asp-controller="Order" asp-action="OrderList" class="text-xs font-semibold text-glam-brown hover:text-glam-black transition">จัดการ Order &rarr;</a>
+    </div>
+</div>
+
+<!-- Users & Products Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+    <!-- Manage Users -->
+    <div class="bg-white rounded-2xl border border-neutral-200 p-6 shadow-sm">
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-sm font-bold uppercase tracking-wider text-glam-black">Users ล่าสุด</h2>
+            <div class="flex gap-2">
+                <a asp-controller="User" asp-action="CreateUser" class="rounded-full bg-glam-black text-white px-3 py-1 text-[11px] font-semibold hover:bg-glam-brown transition">+ เพิ่ม User</a>
+                <a asp-controller="User" asp-action="UserList" class="rounded-full border border-neutral-300 px-3 py-1 text-[11px] font-semibold text-glam-black hover:border-glam-black transition">ทั้งหมด</a>
+            </div>
+        </div>
+        <div class="divide-y divide-neutral-100 text-sm">
+            @foreach (var u in recentUsers)
+            {
+                <div class="py-2.5 flex items-center justify-between gap-2">
+                    <div>
+                        <div class="font-semibold text-glam-black">@u.UserName</div>
+                        <div class="text-xs text-neutral-400">@u.Email</div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="rounded-full bg-glam-brown/15 text-glam-brown px-2.5 py-0.5 text-[11px] font-semibold">@(u.Role?.RoleName ?? "Client")</span>
+                        <a asp-controller="User" asp-action="EditUser" asp-route-id="@u.UserId" class="text-xs text-neutral-500 hover:text-glam-black underline">แก้ไข</a>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Manage Products -->
+    <div class="bg-white rounded-2xl border border-neutral-200 p-6 shadow-sm">
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-sm font-bold uppercase tracking-wider text-glam-black">Products ล่าสุด</h2>
+            <div class="flex gap-2">
+                <a asp-controller="Product" asp-action="CreateProduct" class="rounded-full bg-glam-black text-white px-3 py-1 text-[11px] font-semibold hover:bg-glam-brown transition">+ เพิ่ม Product</a>
+                <a asp-controller="Product" asp-action="ProductList" class="rounded-full border border-neutral-300 px-3 py-1 text-[11px] font-semibold text-glam-black hover:border-glam-black transition">ทั้งหมด</a>
+            </div>
+        </div>
+        <div class="divide-y divide-neutral-100 text-sm">
+            @foreach (var p in recentProducts)
+            {
+                <div class="py-2.5 flex items-center justify-between gap-2">
+                    <div>
+                        <div class="font-semibold text-glam-black">@p.ProductName</div>
+                        <div class="text-xs text-neutral-400">@(p.Category?.CategoryName ?? "-") &middot; คงเหลือ @p.Stock</div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-bold text-glam-brown">฿@p.Price.ToString("N0")</span>
+                        <a asp-controller="Product" asp-action="EditProduct" asp-route-id="@p.ProductId" class="text-xs text-neutral-500 hover:text-glam-black underline">แก้ไข</a>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Manage Categories -->
+<div class="bg-white rounded-2xl border border-neutral-200 p-6 shadow-sm">
+    <div class="flex items-center justify-between mb-4">
+        <h2 class="text-sm font-bold uppercase tracking-wider text-glam-black">Categories ทั้งหมด</h2>
+        <div class="flex gap-2">
+            <a asp-controller="Category" asp-action="CreateCategory" class="rounded-full bg-glam-black text-white px-3 py-1 text-[11px] font-semibold hover:bg-glam-brown transition">+ เพิ่ม Category</a>
+            <a asp-controller="Category" asp-action="CategoryList" class="rounded-full border border-neutral-300 px-3 py-1 text-[11px] font-semibold text-glam-black hover:border-glam-black transition">จัดการทั้งหมด</a>
+        </div>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        @foreach (var c in categories)
+        {
+            <div class="rounded-xl bg-glam-gray px-4 py-3 flex items-center justify-between gap-2">
+                <div>
+                    <div class="text-xs font-bold text-glam-black">@c.CategoryName</div>
+                    <div class="text-[11px] text-neutral-500">@c.Products.Count สินค้า</div>
+                </div>
+                <a asp-controller="Category" asp-action="EditCategory" asp-route-id="@c.CategoryId" class="text-xs text-neutral-600 hover:text-glam-black underline">แก้ไข</a>
+            </div>
+        }
+    </div>
+</div>

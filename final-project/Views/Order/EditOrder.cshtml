@@ -1,0 +1,53 @@
+@model final_project.Models.Order
+@{
+    ViewData["Title"] = "Edit Order";
+    var users = ViewBag.Users as List<final_project.Models.User> ?? new List<final_project.Models.User>();
+}
+
+<div class="max-w-lg mx-auto mt-6 bg-white rounded-2xl border border-neutral-200 p-6 sm:p-8 shadow-sm">
+    <h1 class="text-xl font-bold uppercase tracking-tight text-glam-black mb-6">แก้ไขคำสั่งซื้อ #@Model?.OrderId</h1>
+
+    <form asp-action="EditOrder" method="post" class="space-y-4">
+        <input type="hidden" asp-for="OrderId" />
+        <input type="hidden" asp-for="TotalAmount" />
+        <input type="hidden" asp-for="CreatedAt" />
+
+        <div>
+            <label asp-for="UserId" class="block text-xs font-semibold uppercase tracking-wider text-neutral-600 mb-1.5">ผู้สั่งซื้อ (User)</label>
+            <select asp-for="UserId" class="w-full rounded-xl border border-neutral-300 px-4 py-2.5 text-sm focus:outline-none focus:border-glam-black">
+                @foreach (var u in users)
+                {
+                    <option value="@u.UserId">@u.UserName (@u.Email)</option>
+                }
+            </select>
+        </div>
+        <div>
+            <label asp-for="ShippingAddress" class="block text-xs font-semibold uppercase tracking-wider text-neutral-600 mb-1.5">ที่อยู่จัดส่ง (ShippingAddress)</label>
+            <textarea asp-for="ShippingAddress" rows="3" class="w-full rounded-xl border border-neutral-300 px-4 py-2.5 text-sm focus:outline-none focus:border-glam-black"></textarea>
+        </div>
+        <div>
+            <label asp-for="PaymentMethod" class="block text-xs font-semibold uppercase tracking-wider text-neutral-600 mb-1.5">วิธีชำระเงิน (PaymentMethod)</label>
+            <select asp-for="PaymentMethod" class="w-full rounded-xl border border-neutral-300 px-4 py-2.5 text-sm focus:outline-none focus:border-glam-black">
+                <option value="PromptPay">PromptPay</option>
+                <option value="Bank Transfer">Bank Transfer</option>
+                <option value="Credit Card">Credit Card</option>
+                <option value="Cash on Delivery">Cash on Delivery</option>
+            </select>
+        </div>
+        <div>
+            <label asp-for="Status" class="block text-xs font-semibold uppercase tracking-wider text-neutral-600 mb-1.5">สถานะคำสั่งซื้อ (Status)</label>
+            <select asp-for="Status" class="w-full rounded-xl border border-neutral-300 px-4 py-2.5 text-sm focus:outline-none focus:border-glam-black">
+                <option value="Pending">Pending (รอดำเนินการ)</option>
+                <option value="Paid">Paid (ชำระเงินแล้ว)</option>
+                <option value="Shipping">Shipping (กำลังจัดส่ง)</option>
+                <option value="Completed">Completed (สำเร็จ)</option>
+                <option value="Cancelled">Cancelled (ยกเลิก)</option>
+            </select>
+        </div>
+
+        <div class="flex gap-3 pt-2">
+            <button type="submit" class="rounded-full bg-glam-black text-white px-6 py-2.5 text-xs font-semibold uppercase tracking-wider hover:bg-glam-brown transition">บันทึกการแก้ไข</button>
+            <a asp-action="OrderList" class="rounded-full border border-neutral-300 px-6 py-2.5 text-xs font-medium text-neutral-700 hover:border-glam-black transition">ยกเลิก</a>
+        </div>
+    </form>
+</div>

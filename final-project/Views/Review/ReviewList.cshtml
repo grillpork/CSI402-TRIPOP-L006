@@ -1,0 +1,50 @@
+@model List<final_project.Models.Review>
+@{
+    ViewData["Title"] = "Review List";
+}
+
+<div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+    <div>
+        <h1 class="text-2xl font-bold uppercase tracking-tight text-glam-black">รีวิวสินค้า (Review List)</h1>
+        <p class="text-xs text-neutral-500 mt-1">ความคิดเห็นและคะแนนรีวิวจากผู้ซื้อ</p>
+    </div>
+    <a asp-action="CreateReview" class="rounded-full bg-glam-black text-white px-5 py-2.5 text-xs font-semibold uppercase tracking-wider hover:bg-glam-brown transition">+ เขียนรีวิว (CreateReview)</a>
+</div>
+
+<div class="bg-white rounded-2xl border border-neutral-200 overflow-hidden shadow-sm">
+    <div class="overflow-x-auto">
+        <table class="w-full text-left text-sm">
+            <thead class="bg-glam-gray border-b border-neutral-200 text-xs uppercase tracking-wider text-neutral-600">
+                <tr>
+                    <th class="px-4 py-3.5">ReviewId</th>
+                    <th class="px-4 py-3.5">สินค้า (Product)</th>
+                    <th class="px-4 py-3.5">ผู้รีวิว (User)</th>
+                    <th class="px-4 py-3.5">คะแนน (Rating)</th>
+                    <th class="px-4 py-3.5">ความคิดเห็น (Comment)</th>
+                    <th class="px-4 py-3.5">วันที่</th>
+                    <th class="px-4 py-3.5 text-right">จัดการ</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-neutral-100">
+                @foreach (var review in Model)
+                {
+                    <tr class="hover:bg-glam-gray/50 transition">
+                        <td class="px-4 py-3 text-neutral-500">#@review.ReviewId</td>
+                        <td class="px-4 py-3 font-semibold text-glam-black">@(review.Product?.ProductName ?? $"Product #{review.ProductId}")</td>
+                        <td class="px-4 py-3 text-neutral-600">@(review.User?.UserName ?? $"User #{review.UserId}")</td>
+                        <td class="px-4 py-3 text-amber-500 font-semibold">@review.Rating / 5 ★</td>
+                        <td class="px-4 py-3 text-neutral-600 max-w-xs truncate">@review.Comment</td>
+                        <td class="px-4 py-3 text-neutral-500 text-xs">@review.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
+                        <td class="px-4 py-3 text-right space-x-1 whitespace-nowrap">
+                            <a asp-action="Details" asp-route-id="@review.ReviewId" class="inline-block rounded-full border border-neutral-300 px-3 py-1 text-xs font-medium text-glam-black hover:bg-glam-gray transition">ดู</a>
+                            <a asp-action="EditReview" asp-route-id="@review.ReviewId" class="inline-block rounded-full border border-glam-black px-3 py-1 text-xs font-medium text-glam-black hover:bg-glam-black hover:text-white transition">แก้ไข</a>
+                            <form asp-action="DeleteReview" asp-route-id="@review.ReviewId" method="post" class="inline">
+                                <button type="submit" class="rounded-full border border-red-300 px-3 py-1 text-xs font-medium text-red-600 hover:bg-red-600 hover:text-white transition">ลบ</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

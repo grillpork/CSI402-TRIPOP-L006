@@ -1,0 +1,41 @@
+@model List<final_project.Models.ShopWallet>
+@{
+    ViewData["Title"] = "Shop Wallets";
+}
+
+<div class="mb-6">
+    <h1 class="text-2xl font-bold uppercase tracking-tight text-glam-black">กระเป๋าเงินร้านค้า (Shop Wallets)</h1>
+    <p class="text-xs text-neutral-500 mt-1">ยอดเงินคงเหลือและประวัติรายได้ของร้านค้าผู้ขาย</p>
+</div>
+
+<div class="bg-white rounded-2xl border border-neutral-200 overflow-hidden shadow-sm">
+    <div class="overflow-x-auto">
+        <table class="w-full text-left text-sm">
+            <thead class="bg-glam-gray border-b border-neutral-200 text-xs uppercase tracking-wider text-neutral-600">
+                <tr>
+                    <th class="px-4 py-3.5">WalletId</th>
+                    <th class="px-4 py-3.5">ร้านค้า (Shop)</th>
+                    <th class="px-4 py-3.5">เจ้าของร้าน</th>
+                    <th class="px-4 py-3.5">ยอดเงินคงเหลือ (Balance)</th>
+                    <th class="px-4 py-3.5">อัปเดตล่าสุด</th>
+                    <th class="px-4 py-3.5 text-right">จัดการ</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-neutral-100">
+                @foreach (var w in Model)
+                {
+                    <tr class="hover:bg-glam-gray/50 transition">
+                        <td class="px-4 py-3 text-neutral-500">#@w.WalletId</td>
+                        <td class="px-4 py-3 font-semibold text-glam-black">@(w.Shop?.ShopName ?? $"Shop #{w.ShopId}")</td>
+                        <td class="px-4 py-3 text-neutral-600">@(w.Shop?.User?.UserName ?? "-")</td>
+                        <td class="px-4 py-3 font-bold text-emerald-600">฿@w.Balance.ToString("N2")</td>
+                        <td class="px-4 py-3 text-neutral-500 text-xs">@w.UpdatedAt.ToString("yyyy-MM-dd HH:mm")</td>
+                        <td class="px-4 py-3 text-right">
+                            <a asp-action="Details" asp-route-id="@w.WalletId" class="inline-block rounded-full border border-glam-black px-3.5 py-1 text-xs font-medium text-glam-black hover:bg-glam-black hover:text-white transition">ดูประวัติเงินเข้า</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

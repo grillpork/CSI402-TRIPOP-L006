@@ -1,0 +1,46 @@
+@model List<final_project.Models.Payment>
+@{
+    ViewData["Title"] = "Payment List";
+}
+
+<div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+    <div>
+        <h1 class="text-2xl font-bold uppercase tracking-tight text-glam-black">ประวัติการชำระเงิน (Payment List)</h1>
+        <p class="text-xs text-neutral-500 mt-1">รายการธุรกรรมการชำระเงินทั้งหมด</p>
+    </div>
+    <a asp-controller="Order" asp-action="OrderList" class="rounded-full border border-glam-black px-5 py-2.5 text-xs font-semibold uppercase tracking-wider text-glam-black hover:bg-glam-black hover:text-white transition">ไปหน้ารายการคำสั่งซื้อ</a>
+</div>
+
+<div class="bg-white rounded-2xl border border-neutral-200 overflow-hidden shadow-sm">
+    <div class="overflow-x-auto">
+        <table class="w-full text-left text-sm">
+            <thead class="bg-glam-gray border-b border-neutral-200 text-xs uppercase tracking-wider text-neutral-600">
+                <tr>
+                    <th class="px-4 py-3.5">PaymentId</th>
+                    <th class="px-4 py-3.5">OrderId</th>
+                    <th class="px-4 py-3.5">ช่องทางชำระเงิน</th>
+                    <th class="px-4 py-3.5">ยอดเงิน</th>
+                    <th class="px-4 py-3.5">สถานะ</th>
+                    <th class="px-4 py-3.5">วันที่ชำระ</th>
+                    <th class="px-4 py-3.5 text-right">จัดการ</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-neutral-100">
+                @foreach (var p in Model)
+                {
+                    <tr class="hover:bg-glam-gray/50 transition">
+                        <td class="px-4 py-3 text-neutral-500">#@p.PaymentId</td>
+                        <td class="px-4 py-3 font-semibold text-glam-black">#@p.OrderId</td>
+                        <td class="px-4 py-3 text-neutral-600">@p.PaymentMethod</td>
+                        <td class="px-4 py-3 font-semibold text-glam-brown">฿@p.Amount.ToString("N2")</td>
+                        <td class="px-4 py-3"><span class="rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-0.5 text-xs font-semibold">@p.Status</span></td>
+                        <td class="px-4 py-3 text-neutral-500 text-xs">@p.PaidAt.ToString("yyyy-MM-dd HH:mm")</td>
+                        <td class="px-4 py-3 text-right">
+                            <a asp-action="PaymentSuccess" asp-route-id="@p.PaymentId" class="inline-block rounded-full border border-neutral-300 px-3 py-1 text-xs font-medium text-glam-black hover:bg-glam-gray transition">ดูใบเสร็จ</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

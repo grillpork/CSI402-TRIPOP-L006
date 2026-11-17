@@ -1,0 +1,51 @@
+@model List<final_project.Models.Cart>
+@{
+    ViewData["Title"] = "Cart List";
+}
+
+<div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+    <div>
+        <h1 class="text-2xl font-bold uppercase tracking-tight text-glam-black">ตะกร้าสินค้า (Cart List)</h1>
+        <p class="text-xs text-neutral-500 mt-1">ตรวจสอบสินค้าก่อนทำการสั่งซื้อ</p>
+    </div>
+    <div class="flex flex-wrap gap-2">
+        <a asp-action="CreateCart" class="rounded-full border border-glam-black px-5 py-2.5 text-xs font-semibold uppercase tracking-wider text-glam-black hover:bg-glam-gray transition">+ เพิ่มลงตะกร้า</a>
+        <a asp-controller="Order" asp-action="Checkout" class="rounded-full bg-glam-black text-white px-5 py-2.5 text-xs font-semibold uppercase tracking-wider hover:bg-glam-brown transition">ไปหน้า Checkout</a>
+    </div>
+</div>
+
+<div class="bg-white rounded-2xl border border-neutral-200 overflow-hidden shadow-sm">
+    <div class="overflow-x-auto">
+        <table class="w-full text-left text-sm">
+            <thead class="bg-glam-gray border-b border-neutral-200 text-xs uppercase tracking-wider text-neutral-600">
+                <tr>
+                    <th class="px-4 py-3.5">CartId</th>
+                    <th class="px-4 py-3.5">Product</th>
+                    <th class="px-4 py-3.5">Price</th>
+                    <th class="px-4 py-3.5">Quantity</th>
+                    <th class="px-4 py-3.5">Total</th>
+                    <th class="px-4 py-3.5 text-right">จัดการ</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-neutral-100">
+                @foreach (var item in Model)
+                {
+                    <tr class="hover:bg-glam-gray/50 transition">
+                        <td class="px-4 py-3 text-neutral-500">#@item.CartId</td>
+                        <td class="px-4 py-3 font-semibold text-glam-black">@(item.Product?.ProductName ?? $"Product #{item.ProductId}")</td>
+                        <td class="px-4 py-3 text-neutral-600">฿@(item.Product?.Price.ToString("N2") ?? "0.00")</td>
+                        <td class="px-4 py-3">@item.Quantity</td>
+                        <td class="px-4 py-3 font-semibold text-glam-brown">฿@(((item.Product?.Price ?? 0) * item.Quantity).ToString("N2"))</td>
+                        <td class="px-4 py-3 text-right space-x-1 whitespace-nowrap">
+                            <a asp-action="Details" asp-route-id="@item.CartId" class="inline-block rounded-full border border-neutral-300 px-3 py-1 text-xs font-medium text-glam-black hover:bg-glam-gray transition">ดู</a>
+                            <a asp-action="EditCart" asp-route-id="@item.CartId" class="inline-block rounded-full border border-glam-black px-3 py-1 text-xs font-medium text-glam-black hover:bg-glam-black hover:text-white transition">แก้ไข</a>
+                            <form asp-action="DeleteCart" asp-route-id="@item.CartId" method="post" class="inline">
+                                <button type="submit" class="rounded-full border border-red-300 px-3 py-1 text-xs font-medium text-red-600 hover:bg-red-600 hover:text-white transition">ลบ</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

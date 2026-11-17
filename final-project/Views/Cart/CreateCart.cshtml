@@ -1,0 +1,29 @@
+@model final_project.Models.Cart
+@{
+    ViewData["Title"] = "Create Cart";
+    var products = ViewBag.Products as List<final_project.Models.Product> ?? new List<final_project.Models.Product>();
+}
+
+<div class="max-w-lg mx-auto mt-6 bg-white rounded-2xl border border-neutral-200 p-6 sm:p-8 shadow-sm">
+    <h1 class="text-xl font-bold uppercase tracking-tight text-glam-black mb-6">เพิ่มสินค้าลงตะกร้า (CreateCart)</h1>
+
+    <form asp-action="CreateCart" method="post" class="space-y-4">
+        <div>
+            <label asp-for="ProductId" class="block text-xs font-semibold uppercase tracking-wider text-neutral-600 mb-1.5">Product</label>
+            <select asp-for="ProductId" class="w-full rounded-xl border border-neutral-300 px-4 py-2.5 text-sm focus:outline-none focus:border-glam-black">
+                @foreach (var p in products)
+                {
+                    <option value="@p.ProductId">@p.ProductName (฿@p.Price.ToString("N2"))</option>
+                }
+            </select>
+        </div>
+        <div>
+            <label asp-for="Quantity" class="block text-xs font-semibold uppercase tracking-wider text-neutral-600 mb-1.5">Quantity</label>
+            <input asp-for="Quantity" type="number" min="1" value="1" class="w-full rounded-xl border border-neutral-300 px-4 py-2.5 text-sm focus:outline-none focus:border-glam-black" />
+        </div>
+        <div class="flex gap-3 pt-2">
+            <button type="submit" class="rounded-full bg-glam-black text-white px-6 py-2.5 text-xs font-semibold uppercase tracking-wider hover:bg-glam-brown transition">บันทึก</button>
+            <a asp-action="CartList" class="rounded-full border border-neutral-300 px-6 py-2.5 text-xs font-medium text-neutral-700 hover:border-glam-black transition">ยกเลิก</a>
+        </div>
+    </form>
+</div>

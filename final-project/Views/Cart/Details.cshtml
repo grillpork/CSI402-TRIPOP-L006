@@ -1,0 +1,21 @@
+@model final_project.Models.Cart
+@{
+    ViewData["Title"] = "Cart Details";
+}
+
+<div class="max-w-lg mx-auto mt-6 bg-white rounded-2xl border border-neutral-200 p-6 sm:p-8 shadow-sm">
+    <h1 class="text-xl font-bold uppercase tracking-tight text-glam-black mb-6">รายละเอียดตะกร้าสินค้า (Details)</h1>
+
+    @if (Model != null)
+    {
+        <dl class="divide-y divide-neutral-100 text-sm mb-6">
+            <div class="py-2.5 flex justify-between"><dt class="text-neutral-500">CartId</dt><dd class="font-medium">#@Model.CartId</dd></div>
+            <div class="py-2.5 flex justify-between"><dt class="text-neutral-500">Product</dt><dd class="font-semibold">@(Model.Product?.ProductName ?? $"Product #{Model.ProductId}")</dd></div>
+            <div class="py-2.5 flex justify-between"><dt class="text-neutral-500">Price</dt><dd>฿@(Model.Product?.Price.ToString("N2") ?? "0.00")</dd></div>
+            <div class="py-2.5 flex justify-between"><dt class="text-neutral-500">Quantity</dt><dd>@Model.Quantity</dd></div>
+            <div class="py-2.5 flex justify-between"><dt class="text-neutral-500">Total</dt><dd class="font-bold text-glam-brown">฿@(((Model.Product?.Price ?? 0) * Model.Quantity).ToString("N2"))</dd></div>
+        </dl>
+    }
+
+    <a asp-action="CartList" class="inline-block rounded-full border border-neutral-300 px-5 py-2 text-xs font-semibold text-glam-black hover:border-glam-black transition">กลับหน้ารายการ</a>
+</div>

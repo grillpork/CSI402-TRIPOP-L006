@@ -6,6 +6,12 @@
 # dotenv files
 .env
 
+# Runtime / ASP.NET dev keys
+.aspnet/
+.local/
+Library/
+
+
 # User-specific files
 *.rsuser
 *.suo

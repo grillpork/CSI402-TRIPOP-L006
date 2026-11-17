@@ -1,0 +1,44 @@
+@model List<final_project.Models.Category>
+@{
+    ViewData["Title"] = "Category List";
+}
+
+<div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+    <div>
+        <h1 class="text-2xl font-bold uppercase tracking-tight text-glam-black">หมวดหมู่สินค้า (Category List)</h1>
+        <p class="text-xs text-neutral-500 mt-1">จัดการหมวดหมู่เสื้อผ้าและแฟชั่น</p>
+    </div>
+    <a asp-action="CreateCategory" class="rounded-full bg-glam-black text-white px-5 py-2.5 text-xs font-semibold uppercase tracking-wider hover:bg-glam-brown transition">+ เพิ่มหมวดหมู่ (CreateCategory)</a>
+</div>
+
+<div class="bg-white rounded-2xl border border-neutral-200 overflow-hidden shadow-sm">
+    <div class="overflow-x-auto">
+        <table class="w-full text-left text-sm">
+            <thead class="bg-glam-gray border-b border-neutral-200 text-xs uppercase tracking-wider text-neutral-600">
+                <tr>
+                    <th class="px-4 py-3.5">CategoryId</th>
+                    <th class="px-4 py-3.5">CategoryName</th>
+                    <th class="px-4 py-3.5">Description</th>
+                    <th class="px-4 py-3.5 text-right">จัดการ</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-neutral-100">
+                @foreach (var cat in Model)
+                {
+                    <tr class="hover:bg-glam-gray/50 transition">
+                        <td class="px-4 py-3 text-neutral-500">#@cat.CategoryId</td>
+                        <td class="px-4 py-3 font-semibold text-glam-black">@cat.CategoryName</td>
+                        <td class="px-4 py-3 text-neutral-600">@cat.Description</td>
+                        <td class="px-4 py-3 text-right space-x-1 whitespace-nowrap">
+                            <a asp-action="Details" asp-route-id="@cat.CategoryId" class="inline-block rounded-full border border-neutral-300 px-3 py-1 text-xs font-medium text-glam-black hover:bg-glam-gray transition">ดู</a>
+                            <a asp-action="EditCategory" asp-route-id="@cat.CategoryId" class="inline-block rounded-full border border-glam-black px-3 py-1 text-xs font-medium text-glam-black hover:bg-glam-black hover:text-white transition">แก้ไข</a>
+                            <form asp-action="DeleteCategory" asp-route-id="@cat.CategoryId" method="post" class="inline">
+                                <button type="submit" class="rounded-full border border-red-300 px-3 py-1 text-xs font-medium text-red-600 hover:bg-red-600 hover:text-white transition">ลบ</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

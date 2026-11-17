@@ -1,0 +1,51 @@
+@model List<final_project.Models.Notification>
+@{
+    ViewData["Title"] = "Notifications";
+}
+
+<div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+    <div>
+        <h1 class="text-2xl font-bold uppercase tracking-tight text-glam-black">การแจ้งเตือน (Notifications)</h1>
+        <p class="text-xs text-neutral-500 mt-1">รายการแจ้งเตือนคำสั่งซื้อ การชำระเงิน และร้านค้าใหม่</p>
+    </div>
+    <form asp-action="MarkAllAsRead" method="post">
+        <button type="submit" class="rounded-full border border-glam-black px-5 py-2 text-xs font-semibold text-glam-black hover:bg-glam-black hover:text-white transition">อ่านทั้งหมดแล้ว</button>
+    </form>
+</div>
+
+@if (Model.Any())
+{
+    <div class="bg-white rounded-2xl border border-neutral-200 divide-y divide-neutral-100 overflow-hidden shadow-sm">
+        @foreach (var n in Model)
+        {
+            <div class="p-4 sm:p-5 flex flex-wrap items-center justify-between gap-4 @(n.IsRead ? "bg-glam-gray/50 text-neutral-500" : "bg-white")">
+                <div>
+                    <div class="flex items-center gap-2 font-bold text-sm text-glam-black mb-1">
+                        @if (!n.IsRead)
+                        {
+                            <span class="rounded-full bg-red-500 text-white px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider">ใหม่</span>
+                        }
+                        <span>@n.Title</span>
+                    </div>
+                    <div class="text-sm text-neutral-600">@n.Message</div>
+                    <div class="text-xs text-neutral-400 mt-1">@n.CreatedAt.ToString("yyyy-MM-dd HH:mm")</div>
+                </div>
+                <div class="flex items-center gap-2">
+                    @if (!n.IsRead)
+                    {
+                        <form asp-action="MarkAsRead" asp-route-id="@n.NotificationId" method="post">
+                            <button type="submit" class="rounded-full border border-emerald-500 px-3.5 py-1 text-xs font-semibold text-emerald-700 hover:bg-emerald-600 hover:text-white transition">อ่านแล้ว</button>
+                        </form>
+                    }
+                    <form asp-action="DeleteNotification" asp-route-id="@n.NotificationId" method="post">
+                        <button type="submit" class="rounded-full border border-red-300 px-3.5 py-1 text-xs font-medium text-red-600 hover:bg-red-600 hover:text-white transition">ลบ</button>
+                    </form>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="rounded-2xl bg-glam-gray p-8 text-center text-sm text-neutral-500">ยังไม่มีการแจ้งเตือน</div>
+}

@@ -1,0 +1,56 @@
+@model final_project.Models.ShopWallet
+@{
+    ViewData["Title"] = "Wallet Details";
+}
+
+<div class="max-w-3xl mx-auto mt-6 space-y-6">
+    <div class="bg-white rounded-2xl border border-neutral-200 p-6 sm:p-8 shadow-sm flex flex-wrap items-center justify-between gap-4">
+        <div>
+            <h1 class="text-2xl font-bold uppercase tracking-tight text-glam-black mb-1">@(Model?.Shop?.ShopName ?? $"Shop #{Model?.ShopId}")</h1>
+            <div class="text-xs text-neutral-500">เจ้าของร้าน: @(Model?.Shop?.User?.UserName ?? "-")</div>
+        </div>
+        <div class="text-right">
+            <div class="text-xs uppercase tracking-wider text-neutral-500">ยอดเงินใน Wallet</div>
+            <div class="text-3xl font-bold text-emerald-600">฿@(Model?.Balance.ToString("N2") ?? "0.00")</div>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-neutral-200 p-6 sm:p-8 shadow-sm">
+        <h2 class="text-base font-bold uppercase tracking-wider text-glam-black mb-4">ประวัติรายการเงินเข้า (Wallet Transactions)</h2>
+
+        @if (Model != null && Model.Transactions.Any())
+        {
+            <div class="overflow-x-auto border border-neutral-200 rounded-xl mb-6">
+                <table class="w-full text-left text-sm">
+                    <thead class="bg-glam-gray border-b border-neutral-200 text-xs uppercase tracking-wider text-neutral-600">
+                        <tr>
+                            <th class="px-4 py-3">TransactionId</th>
+                            <th class="px-4 py-3">ประเภท</th>
+                            <th class="px-4 py-3">รายละเอียด</th>
+                            <th class="px-4 py-3">จำนวนเงิน</th>
+                            <th class="px-4 py-3">วันที่</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-neutral-100">
+                        @foreach (var tx in Model.Transactions)
+                        {
+                            <tr>
+                                <td class="px-4 py-3 text-neutral-500">#@tx.TransactionId</td>
+                                <td class="px-4 py-3"><span class="rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-0.5 text-xs font-semibold">@tx.Type</span></td>
+                                <td class="px-4 py-3 text-neutral-600">@tx.Description</td>
+                                <td class="px-4 py-3 font-bold text-emerald-600">+฿@tx.Amount.ToString("N2")</td>
+                                <td class="px-4 py-3 text-neutral-500 text-xs">@tx.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <p class="text-xs text-neutral-500 mb-6">ยังไม่มีรายการเงินเข้า</p>
+        }
+
+        <a asp-action="WalletList" class="inline-block rounded-full border border-neutral-300 px-5 py-2 text-xs font-semibold text-glam-black hover:border-glam-black transition">กลับหน้ารายการ Wallet</a>
+    </div>
+</div>

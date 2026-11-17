@@ -1,0 +1,31 @@
+@{
+    ViewData["Title"] = "Upload Media";
+}
+
+<div class="max-w-lg mx-auto mt-6 bg-white rounded-2xl border border-neutral-200 p-6 sm:p-8 shadow-sm">
+    <h1 class="text-xl font-bold uppercase tracking-tight text-glam-black mb-6">อัปโหลดไฟล์สื่อ (Image / Video / File)</h1>
+
+    <form asp-action="Upload" method="post" enctype="multipart/form-data" class="space-y-4">
+        <div>
+            <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-600 mb-1.5">เลือกไฟล์ (รูปภาพ, วิดีโอ, หรือไฟล์อื่นๆ)</label>
+            <input type="file" name="file" class="w-full rounded-xl border border-neutral-300 px-4 py-2 text-sm file:mr-4 file:rounded-full file:border-0 file:bg-glam-black file:px-4 file:py-1.5 file:text-xs file:font-semibold file:text-white hover:file:bg-glam-brown" />
+        </div>
+        <div>
+            <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-600 mb-1.5">หมวดหมู่การใช้งาน (EntityType)</label>
+            <select name="entityType" class="w-full rounded-xl border border-neutral-300 px-4 py-2.5 text-sm focus:outline-none focus:border-glam-black">
+                <option value="General">General (ทั่วไป)</option>
+                <option value="Product">Product (สินค้า)</option>
+                <option value="User">User (ผู้ใช้)</option>
+                <option value="Shop">Shop (ร้านค้า)</option>
+            </select>
+        </div>
+        <div>
+            <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-600 mb-1.5">รหัสอ้างอิง (EntityId - ไม่บังคับ)</label>
+            <input type="number" name="entityId" class="w-full rounded-xl border border-neutral-300 px-4 py-2.5 text-sm focus:outline-none focus:border-glam-black" placeholder="เช่น 1" />
+        </div>
+        <div class="flex gap-3 pt-2">
+            <button type="submit" class="rounded-full bg-glam-black text-white px-6 py-2.5 text-xs font-semibold uppercase tracking-wider hover:bg-glam-brown transition">อัปโหลด</button>
+            <a asp-action="MediaList" class="rounded-full border border-neutral-300 px-6 py-2.5 text-xs font-medium text-neutral-700 hover:border-glam-black transition">ยกเลิก</a>
+        </div>
+    </form>
+</div>

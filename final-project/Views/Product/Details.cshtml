@@ -1,0 +1,365 @@
+@model final_project.Models.Product
+@{
+    ViewData["Title"] = Model?.ProductName ?? "Product Details";
+    var mediaList = ViewBag.ProductMedia as List<final_project.Models.Media> ?? new List<final_project.Models.Media>();
+    var images = mediaList
+        .Where(m => m.MediaType == "Image")
+        .OrderBy(m => m.SortOrder)
+        .ThenBy(m => m.MediaId)
+        .Select(m => m.FilePath)
+        .ToList();
+    if (!string.IsNullOrEmpty(Model?.ImageUrl) && !images.Contains(Model.ImageUrl))
+    {
+        images.Insert(0, Model.ImageUrl);
+    }
+    var videoMedia = mediaList.FirstOrDefault(m => m.MediaType == "Video");
+    var reviews = ViewBag.Reviews as List<final_project.Models.Review> ?? new List<final_project.Models.Review>();
+    var relatedProducts = ViewBag.RelatedProducts as List<final_project.Models.Product> ?? new List<final_project.Models.Product>();
+    double avgRating = reviews.Any() ? reviews.Average(r => r.Rating) : 5.0;
+    var sizes = new[] { "XS", "S", "M", "L", "XL", "XXL" };
+    var activeSize = string.IsNullOrWhiteSpace(Model?.Size) ? "M" : Model.Size;
+}
+
+@if (Model == null)
+{
+    <div class="rounded-2xl bg-amber-50 border border-amber-200 p-6 text-amber-800 text-sm mb-4">ไม่พบข้อมูลสินค้า</div>
+    <a asp-action="ProductList" class="inline-block rounded-full border border-neutral-300 px-5 py-2 text-xs font-semibold text-glam-black hover:bg-glam-gray transition">กลับหน้ารายการ</a>
+}
+else
+{
+    <div class="text-glam-black py-2">
+        <!-- Breadcrumb -->
+        <div class="flex flex-wrap items-center justify-between gap-3 text-xs text-neutral-500 mb-5">
+            <div class="flex items-center gap-2">
+                <a asp-action="ProductList" class="hover:text-glam-black transition">Products</a>
+                <span>&gt;</span>
+                <span>@(Model.Category?.CategoryName ?? "Fashion")</span>
+                <span>&gt;</span>
+                <strong class="text-glam-black font-semibold">@Model.ProductName</strong>
+            </div>
+            <div class="flex items-center gap-2">
+                @if (User.IsInRole("Admin") || User.IsInRole("Seller"))
+                {
+                    <a asp-action="EditProduct" asp-route-id="@Model.ProductId" class="rounded-full border border-glam-black px-4 py-1.5 text-xs font-semibold text-glam-black hover:bg-glam-black hover:text-white transition">แก้ไขสินค้า</a>
+                }
+                <a asp-action="ProductList" class="rounded-full border border-neutral-300 px-4 py-1.5 text-xs font-medium text-neutral-600 hover:border-glam-black hover:text-glam-black transition">หน้ารายการ</a>
+            </div>
+        </div>
+
+        <!-- Bento Image Gallery -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div class="bg-glam-gray rounded-2xl overflow-hidden h-[420px] sm:h-[480px] flex items-center justify-center">
+                @if (images.Any())
+                {
+                    <img src="@images[0]" alt="@Model.ProductName" class="w-full h-full object-cover" />
+                }
+                else
+                {
+                    <span class="text-xs uppercase tracking-widest text-neutral-400">No Image</span>
+                }
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div class="bg-glam-gray rounded-2xl overflow-hidden h-[202px] sm:h-[232px] flex items-center justify-center">
+                    @if (images.Count > 1)
+                    {
+                        <img src="@images[1]" alt="@Model.ProductName" class="w-full h-full object-cover" />
+                    }
+                    else if (images.Any())
+                    {
+                        <img src="@images[0]" alt="@Model.ProductName" class="w-full h-full object-cover object-top" />
+                    }
+                    else
+                    {
+                        <span class="text-xs text-neutral-400">Preview 1</span>
+                    }
+                </div>
+
+                <div class="bg-glam-gray rounded-2xl overflow-hidden h-[202px] sm:h-[232px] flex items-center justify-center">
+                    @if (images.Count > 2)
+                    {
+                        <img src="@images[2]" alt="@Model.ProductName" class="w-full h-full object-cover" />
+                    }
+                    else if (images.Any())
+                    {
+                        <img src="@images[0]" alt="@Model.ProductName" class="w-full h-full object-cover object-center" />
+                    }
+                    else
+                    {
+                        <span class="text-xs text-neutral-400">Preview 2</span>
+                    }
+                </div>
+
+                <div class="col-span-2 bg-glam-gray rounded-2xl overflow-hidden h-[202px] sm:h-[232px] flex items-center justify-center">
+                    @if (images.Count > 3)
+                    {
+                        <img src="@images[3]" alt="@Model.ProductName" class="w-full h-full object-cover" />
+                    }
+                    else if (images.Any())
+                    {
+                        <img src="@images[0]" alt="@Model.ProductName" class="w-full h-full object-cover object-bottom" />
+                    }
+                    else
+                    {
+                        <span class="text-xs text-neutral-400">Detail View</span>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Product Title, Rating, Variants, Price & Actions -->
+        <form asp-controller="Cart" asp-action="CreateCart" method="post">
+            <input type="hidden" name="ProductId" value="@Model.ProductId" />
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-end pb-8 border-b border-neutral-200 mb-10">
+                <div>
+                    <h1 class="text-2xl sm:text-4xl font-bold uppercase tracking-tight text-glam-black mb-2">@Model.ProductName</h1>
+                    <div class="flex items-center gap-2 mb-5">
+                        <span class="text-amber-400 text-lg leading-none">
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                @(i <= Math.Round(avgRating) ? "★" : "☆")
+                            }
+                        </span>
+                        <span class="text-xs text-neutral-500">(@avgRating.ToString("0.0") from @reviews.Count Reviews)</span>
+                    </div>
+
+                    <div class="flex flex-wrap gap-6 items-center">
+                        <div>
+                            <div class="text-xs text-neutral-500 mb-2">Color: <strong class="text-glam-black">@(Model.Color ?? "Standard")</strong></div>
+                            <div class="flex items-center gap-2">
+                                <span class="w-6 h-6 rounded-full border-2 border-white ring-1 ring-neutral-300 bg-[#d6cfc2] inline-block"></span>
+                                <span class="w-6 h-6 rounded-full border-2 border-white ring-1 ring-neutral-300 bg-glam-black inline-block"></span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="text-xs text-neutral-500 mb-2">Select Size</div>
+                            <div class="flex flex-wrap gap-2">
+                                @foreach (var sz in sizes)
+                                {
+                                    var isSelected = sz == activeSize;
+                                    <button type="button"
+                                            onclick="selectSize(this)"
+                                            class="size-pill rounded-full px-4 py-1.5 text-xs font-medium border transition @(isSelected ? "bg-glam-black text-white border-glam-black" : "bg-white text-glam-black border-neutral-300 hover:bg-glam-black hover:text-white hover:border-glam-black")">
+                                        @sz
+                                    </button>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="flex items-center justify-between gap-4 mb-4">
+                        <div>
+                            <div class="text-xs text-neutral-500">Total Price</div>
+                            <div class="text-3xl sm:text-4xl font-bold text-glam-black">฿@Model.Price.ToString("N0")</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-xs text-neutral-500 mb-1.5">Quantity (คงเหลือ @Model.Stock)</div>
+                            <div class="inline-flex items-center gap-3 border border-neutral-200 rounded-full px-2.5 py-1">
+                                <button type="button" onclick="changeQty(-1)" class="w-7 h-7 rounded-full bg-glam-black text-white text-sm font-bold inline-flex items-center justify-center hover:bg-glam-brown transition">-</button>
+                                <input type="number" id="qtyInput" name="Quantity" value="1" min="1" max="@Math.Max(1, Model.Stock)" class="w-10 text-center text-sm font-bold border-0 focus:outline-none bg-transparent" />
+                                <button type="button" onclick="changeQty(1)" class="w-7 h-7 rounded-full bg-glam-black text-white text-sm font-bold inline-flex items-center justify-center hover:bg-glam-brown transition">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <button type="submit" name="buyNow" value="false" class="w-full rounded-full border border-glam-black bg-white text-glam-black py-3 px-6 text-xs font-semibold uppercase tracking-wider hover:bg-glam-gray transition">
+                            ADD TO CART
+                        </button>
+                        <button type="submit" name="buyNow" value="true" class="w-full rounded-full bg-glam-black text-white py-3 px-6 text-xs font-semibold uppercase tracking-wider hover:bg-glam-brown transition">
+                            BUY IT NOW
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <!-- Editorial / Video Banner -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center mb-6">
+            <div>
+                <h2 class="text-2xl font-bold uppercase tracking-tight text-glam-black leading-snug">
+                    STYLISH @(Model.Category?.CategoryName ?? "FASHION") &rarr;<br />YOUR WARDROBE UPGRADE
+                </h2>
+            </div>
+            <p class="text-sm text-neutral-600 leading-relaxed">
+                @(string.IsNullOrWhiteSpace(Model.Description) ? "คัดสรรเนื้อผ้าคุณภาพดี สวมใส่สบาย เหมาะกับทุกโอกาส" : Model.Description)
+            </p>
+        </div>
+
+        @if (videoMedia != null)
+        {
+            <div class="rounded-2xl overflow-hidden bg-neutral-900 mb-12">
+                <video src="@videoMedia.FilePath" controls class="w-full max-h-[420px] block"></video>
+            </div>
+        }
+        else if (images.Any())
+        {
+            <div class="relative rounded-2xl overflow-hidden bg-neutral-900 h-80 mb-12 flex items-center justify-center text-center text-white">
+                <img src="@images[0]" alt="@Model.ProductName" class="absolute inset-0 w-full h-full object-cover opacity-55" />
+                <div class="relative z-10 px-6">
+                    <div class="text-xs uppercase tracking-[0.2em] text-white/80 mb-2">@Model.ProductName</div>
+                    <h3 class="text-2xl sm:text-3xl font-light">Embrace Timeless Style with Our Collection</h3>
+                </div>
+            </div>
+        }
+
+        <!-- Product Detail & Size Fit -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-10 pb-10 border-b border-neutral-200 mb-10">
+            <div>
+                <h3 class="text-base font-bold uppercase tracking-wider mb-4">PRODUCT DETAIL</h3>
+                <div class="grid grid-cols-2 gap-4 text-xs text-neutral-600">
+                    <ul class="list-disc pl-4 space-y-2.5">
+                        <li>หมวดหมู่: <strong class="text-glam-black">@(Model.Category?.CategoryName ?? "-")</strong></li>
+                        <li>เพศ: <strong class="text-glam-black">@(Model.Gender ?? "Unisex")</strong></li>
+                        <li>สี: <strong class="text-glam-black">@(Model.Color ?? "-")</strong></li>
+                    </ul>
+                    <ul class="list-disc pl-4 space-y-2.5">
+                        <li>ร้านค้า: <strong class="text-glam-black">@(Model.Shop?.ShopName ?? "Official Store")</strong></li>
+                        <li>ไซส์หลัก: <strong class="text-glam-black">@activeSize</strong></li>
+                        <li>สต็อกพร้อมส่ง: <strong class="text-glam-black">@Model.Stock ชิ้น</strong></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div>
+                <h3 class="text-base font-bold uppercase tracking-wider mb-4">SIZE &amp; FIT</h3>
+                <table class="w-full max-w-sm text-xs text-neutral-600">
+                    <tbody class="divide-y divide-neutral-100">
+                        <tr><td class="py-1.5 font-semibold text-glam-black">Shoulder</td><td class="py-1.5">:</td><td class="py-1.5">50cm / 19.75in</td></tr>
+                        <tr><td class="py-1.5 font-semibold text-glam-black">Bust / Chest</td><td class="py-1.5">:</td><td class="py-1.5">112cm / 44.0in</td></tr>
+                        <tr><td class="py-1.5 font-semibold text-glam-black">Length</td><td class="py-1.5">:</td><td class="py-1.5">72cm / 28.3in</td></tr>
+                        <tr><td class="py-1.5 font-semibold text-glam-black">Sleeve length</td><td class="py-1.5">:</td><td class="py-1.5">62cm / 24.4in</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Feature Highlight Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-4 mb-12">
+            <div class="md:col-span-7 relative rounded-2xl overflow-hidden h-64 bg-glam-brown text-white">
+                @if (images.Any())
+                {
+                    <img src="@images[0]" alt="@Model.ProductName" class="w-full h-full object-cover object-center opacity-75" />
+                }
+                <div class="absolute inset-x-0 bottom-0 p-6 bg-gradient-to-t from-glam-black/80 to-transparent">
+                    <div class="text-xs text-white/80 mb-1">@(Model.Category?.CategoryName ?? "Premium Fabric")</div>
+                    <h4 class="text-lg font-medium">Elegant design with the best materials</h4>
+                </div>
+            </div>
+
+            <div class="md:col-span-5 relative rounded-2xl overflow-hidden h-64 bg-glam-brown text-white">
+                @if (images.Count > 1)
+                {
+                    <img src="@images[1]" alt="@Model.ProductName" class="w-full h-full object-cover opacity-75" />
+                }
+                else if (images.Any())
+                {
+                    <img src="@images[0]" alt="@Model.ProductName" class="w-full h-full object-cover object-top opacity-75" />
+                }
+                <div class="absolute inset-x-0 bottom-0 p-6 bg-gradient-to-t from-glam-black/80 to-transparent">
+                    <div class="text-xs text-white/80 mb-1">Neat Stitches</div>
+                    <h4 class="text-lg font-medium">Durable and strong stitches</h4>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rating & Reviews -->
+        <div class="pb-10 border-b border-neutral-200 mb-10">
+            <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+                <div>
+                    <h3 class="text-base font-bold uppercase tracking-wider mb-1">RATING &amp; REVIEWS (@reviews.Count)</h3>
+                    <div class="text-xs text-neutral-500">Showing @reviews.Count reviews for this product</div>
+                </div>
+                <a asp-controller="Review" asp-action="CreateReview" class="rounded-full border border-glam-black px-5 py-2 text-xs font-semibold text-glam-black hover:bg-glam-black hover:text-white transition">+ เขียนรีวิว</a>
+            </div>
+
+            @if (reviews.Any())
+            {
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    @foreach (var r in reviews)
+                    {
+                        <div class="flex gap-3.5 rounded-2xl bg-glam-gray/60 p-4">
+                            <div class="w-10 h-10 rounded-full bg-glam-black text-white flex items-center justify-center font-semibold text-sm overflow-hidden shrink-0">
+                                @if (!string.IsNullOrEmpty(r.User?.ImageUrl))
+                                {
+                                    <img src="@r.User.ImageUrl" alt="@r.User.UserName" class="w-full h-full object-cover" />
+                                }
+                                else
+                                {
+                                    @((r.User?.UserName ?? "U").Substring(0, 1).ToUpper())
+                                }
+                            </div>
+                            <div>
+                                <div class="flex items-center gap-2 mb-0.5">
+                                    <strong class="text-xs font-bold">@(r.User?.UserName ?? $"User #{r.UserId}")</strong>
+                                    <span class="text-[11px] text-neutral-400">@r.CreatedAt.ToString("dd MMM yyyy")</span>
+                                </div>
+                                <div class="text-amber-400 text-xs mb-1.5">
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        @(i <= r.Rating ? "★" : "☆")
+                                    }
+                                </div>
+                                <p class="text-xs text-neutral-600 leading-relaxed">@r.Comment</p>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <p class="text-xs text-neutral-500">ยังไม่มีรีวิวสำหรับสินค้านี้</p>
+            }
+        </div>
+
+        <!-- Related Products -->
+        @if (relatedProducts.Any())
+        {
+            <div class="mb-6">
+                <h3 class="text-base font-bold uppercase tracking-wider mb-5">RELATED PRODUCTS</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                    @foreach (var rp in relatedProducts)
+                    {
+                        <a asp-action="Details" asp-route-id="@rp.ProductId" class="group block">
+                            <div class="bg-glam-gray rounded-2xl h-72 overflow-hidden flex items-center justify-center mb-2.5">
+                                @if (!string.IsNullOrEmpty(rp.ImageUrl))
+                                {
+                                    <img src="@rp.ImageUrl" alt="@rp.ProductName" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" />
+                                }
+                                else
+                                {
+                                    <span class="text-xs text-neutral-400">No Image</span>
+                                }
+                            </div>
+                            <div class="flex items-center justify-between gap-2">
+                                <strong class="text-xs font-bold uppercase text-glam-black truncate">@rp.ProductName</strong>
+                                <span class="text-xs font-medium text-neutral-500 shrink-0">฿@rp.Price.ToString("N0")</span>
+                            </div>
+                        </a>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+}
+
+<script>
+    function selectSize(btn) {
+        document.querySelectorAll('.size-pill').forEach(b => {
+            b.classList.remove('bg-glam-black', 'text-white', 'border-glam-black');
+            b.classList.add('bg-white', 'text-glam-black', 'border-neutral-300');
+        });
+        btn.classList.remove('bg-white', 'text-glam-black', 'border-neutral-300');
+        btn.classList.add('bg-glam-black', 'text-white', 'border-glam-black');
+    }
+
+    function changeQty(delta) {
+        const input = document.getElementById('qtyInput');
+        let val = parseInt(input.value || '1', 10) + delta;
+        if (val < 1) val = 1;
+        input.value = val;
+    }
+</script>

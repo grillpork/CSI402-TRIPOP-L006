@@ -1,0 +1,41 @@
+@model final_project.Models.UserViewModel
+@{
+    ViewData["Title"] = "Create User";
+    var roles = ViewBag.Roles as List<final_project.Models.Role> ?? new List<final_project.Models.Role>();
+}
+
+<div class="max-w-lg mx-auto mt-6 bg-white rounded-2xl border border-neutral-200 p-6 sm:p-8 shadow-sm">
+    <h1 class="text-xl font-bold uppercase tracking-tight text-glam-black mb-6">เพิ่มผู้ใช้ใหม่ (CreateUser)</h1>
+
+    <form asp-action="CreateUser" method="post" enctype="multipart/form-data" class="space-y-4">
+        <div>
+            <label asp-for="UserName" class="block text-xs font-semibold uppercase tracking-wider text-neutral-600 mb-1.5">UserName</label>
+            <input asp-for="UserName" class="w-full rounded-xl border border-neutral-300 px-4 py-2.5 text-sm focus:outline-none focus:border-glam-black" />
+        </div>
+        <div>
+            <label asp-for="Email" class="block text-xs font-semibold uppercase tracking-wider text-neutral-600 mb-1.5">Email</label>
+            <input asp-for="Email" type="email" class="w-full rounded-xl border border-neutral-300 px-4 py-2.5 text-sm focus:outline-none focus:border-glam-black" />
+        </div>
+        <div>
+            <label asp-for="Password" class="block text-xs font-semibold uppercase tracking-wider text-neutral-600 mb-1.5">Password</label>
+            <input asp-for="Password" class="w-full rounded-xl border border-neutral-300 px-4 py-2.5 text-sm focus:outline-none focus:border-glam-black" />
+        </div>
+        <div>
+            <label asp-for="RoleId" class="block text-xs font-semibold uppercase tracking-wider text-neutral-600 mb-1.5">Role</label>
+            <select asp-for="RoleId" class="w-full rounded-xl border border-neutral-300 px-4 py-2.5 text-sm focus:outline-none focus:border-glam-black">
+                @foreach (var r in roles)
+                {
+                    <option value="@r.RoleId">@r.RoleName</option>
+                }
+            </select>
+        </div>
+        <div>
+            <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-600 mb-1.5">รูปโปรไฟล์ (Upload Image)</label>
+            <input type="file" name="imageFile" accept="image/*" class="w-full rounded-xl border border-neutral-300 px-4 py-2 text-sm file:mr-4 file:rounded-full file:border-0 file:bg-glam-black file:px-4 file:py-1.5 file:text-xs file:font-semibold file:text-white hover:file:bg-glam-brown" />
+        </div>
+        <div class="flex gap-3 pt-2">
+            <button type="submit" class="rounded-full bg-glam-black text-white px-6 py-2.5 text-xs font-semibold uppercase tracking-wider hover:bg-glam-brown transition">บันทึก</button>
+            <a asp-action="UserList" class="rounded-full border border-neutral-300 px-6 py-2.5 text-xs font-medium text-neutral-700 hover:border-glam-black transition">ยกเลิก</a>
+        </div>
+    </form>
+</div>

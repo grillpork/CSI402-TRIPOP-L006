@@ -1,0 +1,72 @@
+@model List<final_project.Models.Media>
+@{
+    ViewData["Title"] = "Media Library";
+    string? selectedType = ViewBag.SelectedType;
+}
+
+<div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+    <div>
+        <h1 class="text-2xl font-bold uppercase tracking-tight text-glam-black">คลังไฟล์สื่อ (Media Library)</h1>
+        <p class="text-xs text-neutral-500 mt-1">จัดการรูปภาพ วิดีโอ และไฟล์อัปโหลดทั้งหมด</p>
+    </div>
+    <a asp-action="Upload" class="rounded-full bg-glam-black text-white px-5 py-2.5 text-xs font-semibold uppercase tracking-wider hover:bg-glam-brown transition">+ อัปโหลดไฟล์ใหม่ (Upload)</a>
+</div>
+
+<div class="inline-flex flex-wrap gap-2 mb-6">
+    <a asp-action="MediaList" class="rounded-full px-4 py-1.5 text-xs font-semibold border transition @(string.IsNullOrEmpty(selectedType) ? "bg-glam-black text-white border-glam-black" : "bg-white text-glam-black border-neutral-300 hover:border-glam-black")">ทั้งหมด</a>
+    <a asp-action="MediaList" asp-route-type="Image" class="rounded-full px-4 py-1.5 text-xs font-semibold border transition @(selectedType == "Image" ? "bg-glam-black text-white border-glam-black" : "bg-white text-glam-black border-neutral-300 hover:border-glam-black")">Image</a>
+    <a asp-action="MediaList" asp-route-type="Video" class="rounded-full px-4 py-1.5 text-xs font-semibold border transition @(selectedType == "Video" ? "bg-glam-black text-white border-glam-black" : "bg-white text-glam-black border-neutral-300 hover:border-glam-black")">Video</a>
+    <a asp-action="MediaList" asp-route-type="File" class="rounded-full px-4 py-1.5 text-xs font-semibold border transition @(selectedType == "File" ? "bg-glam-black text-white border-glam-black" : "bg-white text-glam-black border-neutral-300 hover:border-glam-black")">File อื่นๆ</a>
+</div>
+
+<div class="bg-white rounded-2xl border border-neutral-200 overflow-hidden shadow-sm">
+    <div class="overflow-x-auto">
+        <table class="w-full text-left text-sm">
+            <thead class="bg-glam-gray border-b border-neutral-200 text-xs uppercase tracking-wider text-neutral-600">
+                <tr>
+                    <th class="px-4 py-3.5">MediaId</th>
+                    <th class="px-4 py-3.5">ตัวอย่าง (Preview)</th>
+                    <th class="px-4 py-3.5">ชื่อไฟล์</th>
+                    <th class="px-4 py-3.5">ประเภท (MediaType)</th>
+                    <th class="px-4 py-3.5">เชื่อมกับ (Entity)</th>
+                    <th class="px-4 py-3.5">วันที่อัปโหลด</th>
+                    <th class="px-4 py-3.5 text-right">จัดการ</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-neutral-100">
+                @foreach (var m in Model)
+                {
+                    <tr class="hover:bg-glam-gray/50 transition">
+                        <td class="px-4 py-3 text-neutral-500">#@m.MediaId</td>
+                        <td class="px-4 py-3">
+                            @if (m.MediaType == "Image")
+                            {
+                                <img src="@m.FilePath" alt="@m.FileName" class="w-14 h-14 object-cover rounded-xl border border-neutral-200" />
+                            }
+                            else if (m.MediaType == "Video")
+                            {
+                                <video src="@m.FilePath" class="w-32 max-h-20 rounded-xl border border-neutral-200" controls></video>
+                            }
+                            else
+                            {
+                                <a href="@m.FilePath" target="_blank" class="inline-block rounded-full border border-neutral-300 px-3 py-1 text-xs font-medium text-glam-black hover:bg-glam-gray transition">เปิดไฟล์</a>
+                            }
+                        </td>
+                        <td class="px-4 py-3">
+                            <div class="font-medium text-glam-black">@m.FileName</div>
+                            <div class="text-xs text-neutral-400">@m.FilePath</div>
+                        </td>
+                        <td class="px-4 py-3"><span class="rounded-full bg-glam-brown/15 text-glam-brown px-3 py-0.5 text-xs font-semibold">@m.MediaType</span></td>
+                        <td class="px-4 py-3 text-neutral-600">@m.EntityType @(m.EntityId != null ? $"#{m.EntityId}" : "")</td>
+                        <td class="px-4 py-3 text-neutral-500 text-xs">@m.UploadedAt.ToString("yyyy-MM-dd HH:mm")</td>
+                        <td class="px-4 py-3 text-right">
+                            <form asp-action="DeleteMedia" asp-route-id="@m.MediaId" method="post" class="inline">
+                                <button type="submit" class="rounded-full border border-red-300 px-3 py-1 text-xs font-medium text-red-600 hover:bg-red-600 hover:text-white transition">ลบ</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

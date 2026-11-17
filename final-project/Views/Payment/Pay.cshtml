@@ -1,0 +1,37 @@
+@model final_project.Models.Order
+@{
+    ViewData["Title"] = "Demo Payment";
+}
+
+<div class="max-w-md mx-auto mt-10 bg-white rounded-2xl border border-neutral-200 p-8 text-center shadow-sm">
+    <span class="inline-block rounded-full bg-amber-100 text-amber-800 px-3 py-1 text-[11px] font-bold uppercase tracking-wider mb-3">DEMO PAYMENT</span>
+    <h1 class="text-2xl font-bold uppercase tracking-tight text-glam-black mb-1">ชำระเงินคำสั่งซื้อ #@Model.OrderId</h1>
+    <p class="text-xs text-neutral-500 mb-6">ผู้สั่งซื้อ: @(Model.User?.UserName ?? $"User #{Model.UserId}")</p>
+
+    <div class="rounded-2xl bg-glam-gray p-5 mb-6">
+        <div class="text-xs uppercase tracking-wider text-neutral-500 mb-1">ยอดที่ต้องชำระ</div>
+        <div class="text-3xl font-bold text-glam-black">฿@Model.TotalAmount.ToString("N2")</div>
+    </div>
+
+    <form asp-action="Pay" method="post" class="text-left space-y-5">
+        <input type="hidden" name="orderId" value="@Model.OrderId" />
+
+        <div>
+            <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-600 mb-1.5">เลือกช่องทางชำระเงิน (Demo)</label>
+            <select name="paymentMethod" class="w-full rounded-xl border border-neutral-300 px-4 py-2.5 text-sm focus:outline-none focus:border-glam-black">
+                <option value="PromptPay" selected="@(Model.PaymentMethod == "PromptPay")">PromptPay (QR Code)</option>
+                <option value="Bank Transfer" selected="@(Model.PaymentMethod == "Bank Transfer")">โอนผ่านธนาคาร</option>
+                <option value="Credit Card" selected="@(Model.PaymentMethod == "Credit Card")">บัตรเครดิต / เดบิต</option>
+                <option value="Cash on Delivery" selected="@(Model.PaymentMethod == "Cash on Delivery")">เก็บเงินปลายทาง</option>
+            </select>
+        </div>
+
+        <button type="submit" class="w-full rounded-full bg-emerald-600 text-white py-3 text-xs font-semibold uppercase tracking-wider hover:bg-emerald-700 transition">
+            ชำระเงินสำเร็จทันที (Demo Pay)
+        </button>
+    </form>
+
+    <div class="mt-4">
+        <a asp-controller="Order" asp-action="OrderList" class="text-xs text-neutral-500 hover:text-glam-black underline">ไว้ชำระภายหลัง</a>
+    </div>
+</div>

@@ -1,0 +1,33 @@
+@model tripop_8021_lab006.Models.UserViewModel
+@{
+    ViewData["Title"] = "Register";
+}
+
+<div class="max-w-md mx-auto mt-10 p-6 bg-white rounded-xl border border-slate-200 shadow-sm">
+    <h1 class="text-2xl font-bold text-slate-900 mb-4">สมัครสมาชิก (Register)</h1>
+
+    <form asp-controller="Login" asp-action="Register" method="post" class="space-y-4">
+        <div>
+            <label asp-for="UserName" class="block text-sm font-medium text-slate-700 mb-1">UserName</label>
+            <input asp-for="UserName" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+        </div>
+
+        <div>
+            <label asp-for="Email" class="block text-sm font-medium text-slate-700 mb-1">Email</label>
+            <input asp-for="Email" type="email" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+        </div>
+
+        <div>
+            <label asp-for="Password" class="block text-sm font-medium text-slate-700 mb-1">Password</label>
+            <input asp-for="Password" type="password" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+        </div>
+
+        <button type="submit" class="w-full rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700">
+            สมัครสมาชิก
+        </button>
+    </form>
+
+    <div class="mt-4 text-center text-sm text-slate-600">
+        มีบัญชีอยู่แล้ว? <a asp-controller="Login" asp-action="Login" class="text-indigo-600 hover:underline">เข้าสู่ระบบ</a>
+    </div>
+</div>

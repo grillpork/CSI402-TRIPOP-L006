@@ -1,0 +1,113 @@
+@model List<final_project.Models.User>
+@{
+    ViewData["Title"] = "Admin - จัดการผู้ใช้งาน";
+    var roles = ViewBag.Roles as List<final_project.Models.Role> ?? new List<final_project.Models.Role>();
+    string? searchQuery = ViewBag.SearchQuery;
+    int? selectedRoleId = ViewBag.SelectedRoleId;
+}
+
+<div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+    <div>
+        <h1 class="text-2xl font-bold uppercase tracking-tight text-glam-black">จัดการผู้ใช้งาน (Admin User Management)</h1>
+        <p class="text-xs text-neutral-500 mt-1">จัดการบัญชีผู้ใช้ บทบาท (Admin / Seller / Client) และข้อมูลโปรไฟล์</p>
+    </div>
+    <a asp-action="CreateUser" class="rounded-full bg-glam-black text-white px-5 py-2.5 text-xs font-semibold uppercase tracking-wider hover:bg-glam-brown transition">+ เพิ่มผู้ใช้ใหม่</a>
+</div>
+
+<!-- Summary Cards -->
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    <div class="bg-white rounded-2xl border border-neutral-200 p-4 shadow-sm">
+        <div class="text-xs uppercase tracking-wider text-neutral-500">ผู้ใช้ทั้งหมด</div>
+        <div class="text-2xl font-bold text-glam-black mt-1">@ViewBag.TotalUsers</div>
+    </div>
+    <div class="bg-white rounded-2xl border border-neutral-200 p-4 shadow-sm">
+        <div class="text-xs uppercase tracking-wider text-neutral-500">Admin</div>
+        <div class="text-2xl font-bold text-glam-black mt-1">@ViewBag.AdminCount</div>
+    </div>
+    <div class="bg-white rounded-2xl border border-neutral-200 p-4 shadow-sm">
+        <div class="text-xs uppercase tracking-wider text-neutral-500">Seller</div>
+        <div class="text-2xl font-bold text-glam-brown mt-1">@ViewBag.SellerCount</div>
+    </div>
+    <div class="bg-white rounded-2xl border border-neutral-200 p-4 shadow-sm">
+        <div class="text-xs uppercase tracking-wider text-neutral-500">Client</div>
+        <div class="text-2xl font-bold text-emerald-600 mt-1">@ViewBag.ClientCount</div>
+    </div>
+</div>
+
+<!-- Search & Filter -->
+<form asp-action="UserList" method="get" class="grid grid-cols-1 md:grid-cols-12 gap-3 mb-6 bg-white p-4 rounded-2xl border border-neutral-200 shadow-sm">
+    <div class="md:col-span-5">
+        <input type="text" name="q" value="@searchQuery" class="w-full rounded-full bg-glam-gray border border-neutral-200 px-4 py-2 text-sm focus:outline-none focus:border-glam-black" placeholder="ค้นหา UserName หรือ Email..." />
+    </div>
+    <div class="md:col-span-4">
+        <select name="roleId" class="w-full rounded-full bg-glam-gray border border-neutral-200 px-4 py-2 text-sm focus:outline-none focus:border-glam-black">
+            <option value="">-- ทุกบทบาท (All Roles) --</option>
+            @foreach (var r in roles)
+            {
+                <option value="@r.RoleId" selected="@(selectedRoleId == r.RoleId)">@r.RoleName</option>
+            }
+        </select>
+    </div>
+    <div class="md:col-span-3 flex gap-2">
+        <button type="submit" class="flex-1 rounded-full bg-glam-black text-white px-4 py-2 text-xs font-semibold uppercase tracking-wider hover:bg-glam-brown transition">ค้นหา</button>
+        <a asp-action="UserList" class="rounded-full border border-neutral-300 px-4 py-2 text-xs font-medium text-neutral-700 hover:border-glam-black transition inline-flex items-center">ล้างค่า</a>
+    </div>
+</form>
+
+<!-- Users Table -->
+<div class="bg-white rounded-2xl border border-neutral-200 overflow-hidden shadow-sm">
+    <div class="overflow-x-auto">
+        <table class="w-full text-left text-sm">
+            <thead class="bg-glam-gray border-b border-neutral-200 text-xs uppercase tracking-wider text-neutral-600">
+                <tr>
+                    <th class="px-4 py-3.5">ID</th>
+                    <th class="px-4 py-3.5">รูปโปรไฟล์</th>
+                    <th class="px-4 py-3.5">UserName</th>
+                    <th class="px-4 py-3.5">Email</th>
+                    <th class="px-4 py-3.5">เปลี่ยน Role ด่วน</th>
+                    <th class="px-4 py-3.5 text-right">จัดการ</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-neutral-100">
+                @foreach (var user in Model)
+                {
+                    <tr class="hover:bg-glam-gray/50 transition">
+                        <td class="px-4 py-3 text-neutral-500">#@user.UserId</td>
+                        <td class="px-4 py-3">
+                            @if (!string.IsNullOrEmpty(user.ImageUrl))
+                            {
+                                <img src="@user.ImageUrl" alt="@user.UserName" class="w-10 h-10 object-cover rounded-full border border-neutral-200" />
+                            }
+                            else
+                            {
+                                <div class="w-10 h-10 rounded-full bg-glam-black text-white flex items-center justify-center text-xs font-bold">
+                                    @((user.UserName ?? "U").Substring(0, 1).ToUpper())
+                                </div>
+                            }
+                        </td>
+                        <td class="px-4 py-3 font-semibold text-glam-black">@user.UserName</td>
+                        <td class="px-4 py-3 text-neutral-600">@user.Email</td>
+                        <td class="px-4 py-3">
+                            <form asp-action="ChangeRole" method="post" class="inline-flex items-center gap-1.5">
+                                <input type="hidden" name="userId" value="@user.UserId" />
+                                <select name="roleId" onchange="this.form.submit()" class="rounded-full border border-neutral-300 bg-white px-3 py-1 text-xs font-semibold text-glam-black focus:outline-none focus:border-glam-black">
+                                    @foreach (var r in roles)
+                                    {
+                                        <option value="@r.RoleId" selected="@(user.RoleId == r.RoleId)">@r.RoleName</option>
+                                    }
+                                </select>
+                            </form>
+                        </td>
+                        <td class="px-4 py-3 text-right space-x-1 whitespace-nowrap">
+                            <a asp-action="Details" asp-route-id="@user.UserId" class="inline-block rounded-full border border-neutral-300 px-3 py-1 text-xs font-medium text-glam-black hover:bg-glam-gray transition">ดู</a>
+                            <a asp-action="EditUser" asp-route-id="@user.UserId" class="inline-block rounded-full border border-glam-black px-3 py-1 text-xs font-medium text-glam-black hover:bg-glam-black hover:text-white transition">แก้ไข</a>
+                            <form asp-action="DeleteUser" asp-route-id="@user.UserId" method="post" class="inline">
+                                <button type="submit" class="rounded-full border border-red-300 px-3 py-1 text-xs font-medium text-red-600 hover:bg-red-600 hover:text-white transition">ลบ</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

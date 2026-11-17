@@ -1,0 +1,28 @@
+@model IEnumerable<tripop_8021_lab006.Models.LabStudent>
+
+<table class="table table-bordered">
+<thead>
+    <tr>
+        <th>StdID</th>
+        <th>StdPassword</th>
+        <th>StdName</th>
+        <th>StdLastname</th>
+        <th>Action</th>
+    </tr>
+</thead>
+<tbody>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.StdId</td>
+            <td>@item.StdPassword</td>
+            <td>@item.StdName</td>
+            <td>@item.StdLastname</td>
+            <td>
+                <a asp-action="Lab9_Edit" asp-route-id="@item.StdId" class="btn btn-warning btn-sm">Edit</a>
+                <a asp-action="Lab9_Delete" asp-route-id="@item.StdId" class="btn btn-danger btn-sm" onclick="return confirm('ยืนยันการลบข้อมูล?')">Delete</a>
+            </td>
+        </tr>
+    }
+</tbody>
+</table>

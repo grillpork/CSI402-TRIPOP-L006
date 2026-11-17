@@ -1,0 +1,28 @@
+@{
+    var controller = ViewContext.RouteData.Values["controller"]?.ToString();
+    var action = ViewContext.RouteData.Values["action"]?.ToString();
+
+    var isClientStorefrontRoute =
+        controller is "Home" or "Cart" or "Login" or "Review" ||
+        (controller == "Product" && action == "Details") ||
+        (controller == "Order" && action == "Checkout") ||
+        (controller == "Payment" && action is "Pay" or "PaymentSuccess") ||
+        (controller == "Shop" && action == "RegisterShop");
+
+    if (isClientStorefrontRoute)
+    {
+        Layout = "_ClientLayout";
+    }
+    else if (User.IsInRole("Admin"))
+    {
+        Layout = "_AdminLayout";
+    }
+    else if (User.IsInRole("Seller"))
+    {
+        Layout = "_SellerLayout";
+    }
+    else
+    {
+        Layout = "_ClientLayout";
+    }
+}
