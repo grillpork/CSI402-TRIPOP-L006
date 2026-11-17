@@ -22,7 +22,7 @@ public class UserController : Controller
     public IActionResult UserList()
     {
         var users = _db.Users.ToList();
-        return View(users);
+        return View("Userlist", users);
     }
 
     // READ: ดูรายละเอียด User รายคน
